@@ -1,0 +1,21 @@
+# Tệp môi trường - CỰC KỲ QUAN TRỌNG
+.env
+
+# Thư mục build và các tệp do Flutter tạo ra
+/build/
+/.dart_tool/
+/.idea/
+/.vscode/
+/windows/
+/linux/
+/macos/
+*.iml
+*.ipr
+*.iws
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+.packages
+
+# Tệp log
+*.log

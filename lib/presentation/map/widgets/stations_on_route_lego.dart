@@ -1,0 +1,112 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:smart_charger_app/domain/repositories/i_directions_repository.dart';
+import 'package:smart_charger_app/domain/repositories/i_settings_repository.dart';
+
+import '../../bloc/map_control_bloc.dart'; // Import BLoC cần thiết
+import '../../bloc/route_bloc.dart';
+import '../../bloc/station_selection_bloc.dart'; // Import BLoC cần thiết
+import '../../bloc/stations_on_route_bloc.dart';
+import 'station_list_sheet.dart';
+
+class StationsOnRouteLego extends StatelessWidget {
+  const StationsOnRouteLego({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => StationsOnRouteBloc(
+        context.read<IDirectionsRepository>(),
+        context.read<ISettingsRepository>(),
+      )..add(LoadInitialRadius()),
+      child: const _StationsOnRouteView(),
+    );
+  }
+}
+
+class _StationsOnRouteView extends StatelessWidget {
+  const _StationsOnRouteView();
+
+  void _showStationsList(BuildContext context) {
+    final routeState = context.read<RouteBloc>().state;
+    if (routeState.route == null) return;
+    
+    context.read<StationsOnRouteBloc>().add(FetchStationsOnRoute(routeState.route!));
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) { // Context của BottomSheet
+        // SỬA LỖI: Cung cấp tất cả các BLoC cần thiết cho cây widget mới
+        return MultiBlocProvider(
+          providers: [
+            // Cung cấp instance StationsOnRouteBloc hiện có
+            BlocProvider.value(
+              value: BlocProvider.of<StationsOnRouteBloc>(context),
+            ),
+            // Cung cấp instance MapControlBloc từ context gốc
+            BlocProvider.value(
+              value: BlocProvider.of<MapControlBloc>(context),
+            ),
+            // Cung cấp instance StationSelectionBloc từ context gốc
+            BlocProvider.value(
+              value: BlocProvider.of<StationSelectionBloc>(context),
+            ),
+          ],
+          child: BlocBuilder<StationsOnRouteBloc, StationsOnRouteState>(
+            builder: (sheetContext, state) {
+              return PointerInterceptor(
+                child: StationListSheet(
+                  title: 'Trạm sạc trên lộ trình',
+                  stations: state is StationsOnRouteSuccess ? state.stations : [],
+                  radius: state.radius,
+                  isLoading: state is StationsOnRouteLoading,
+                  onRadiusChanged: (newRadius) {
+                    sheetContext.read<StationsOnRouteBloc>().add(RadiusChanged(newRadius));
+                  },
+                  onRadiusChangeEnd: (newRadius) {
+                    if (routeState.route != null) {
+                      sheetContext.read<StationsOnRouteBloc>().add(RadiusChangeCompleted(routeState.route!));
+                    }
+                  },
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<RouteBloc, RouteState>(
+      builder: (context, state) {
+        if (state is RouteSuccess) {
+          return Positioned(
+            bottom: 24,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: PointerInterceptor(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.ev_station_outlined),
+                  label: const Text('Tìm trạm trên đường'),
+                  onPressed: () => _showStationsList(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+}
