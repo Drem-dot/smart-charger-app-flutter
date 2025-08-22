@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
-// Đảm bảo rằng bạn đã import đúng đường dẫn đến các file này trong project của bạn
 import '../../../domain/entities/geocoding_result_entity.dart';
 import '../../../domain/repositories/i_geocoding_repository.dart';
 import '../../bloc/map_control_bloc.dart';
@@ -13,7 +12,7 @@ import '../../bloc/point_selection_bloc.dart';
 import '../../bloc/route_bloc.dart';
 import '../../bloc/station_selection_bloc.dart';
 import '../../bloc/stations_on_route_bloc.dart';
-import 'station_list_sheet.dart'; // Widget hiển thị danh sách trạm trong bottom sheet
+import 'station_list_sheet.dart';
 
 class DirectionsLego extends StatefulWidget {
   final Position? currentUserPosition;
@@ -26,7 +25,6 @@ class DirectionsLego extends StatefulWidget {
 class _DirectionsLegoState extends State<DirectionsLego> {
   final TextEditingController _originController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
-
   late final IGeocodingRepository _geocodingRepository;
 
   @override
@@ -42,47 +40,39 @@ class _DirectionsLegoState extends State<DirectionsLego> {
     super.dispose();
   }
 
-  /// Hàm hiển thị bottom sheet danh sách các trạm sạc trên lộ trình.
-  /// Logic được chuyển từ widget StationsOnRouteLego cũ.
+  // --- HÀM _showStationsList ĐÃ ĐƯỢC CẬP NHẬT HOÀN TOÀN ---
   void _showStationsList(BuildContext context) {
     final routeState = context.read<RouteBloc>().state;
-    // Chỉ hoạt động khi đã có kết quả tìm đường thành công (RouteSuccess)
     if (routeState is! RouteSuccess || routeState.route == null) return;
 
-    // Bắn event để StationsOnRouteBloc bắt đầu tìm kiếm các trạm
-    context.read<StationsOnRouteBloc>().add(FetchStationsOnRoute(routeState.route!));
+    // Bắn event mới để tìm kiếm và lọc
+    context.read<StationsOnRouteBloc>().add(FindStationsForRoute(routeState.route!));
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Cho phép sheet chiếm nhiều không gian hơn
-      backgroundColor: Colors.transparent, // Nền trong suốt để bo góc có hiệu lực
-      builder: (_) { // (_) là context của BottomSheet
-        // Cung cấp các BLoC cần thiết cho cây widget của BottomSheet
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
         return MultiBlocProvider(
           providers: [
-            // Cung cấp instance StationsOnRouteBloc đã có từ MapPage
             BlocProvider.value(value: BlocProvider.of<StationsOnRouteBloc>(context)),
-            // Cung cấp các BLoC khác mà StationListSheet có thể cần
             BlocProvider.value(value: BlocProvider.of<MapControlBloc>(context)),
             BlocProvider.value(value: BlocProvider.of<StationSelectionBloc>(context)),
           ],
+          // Lắng nghe StationsOnRouteBloc để hiển thị loading và kết quả
           child: BlocBuilder<StationsOnRouteBloc, StationsOnRouteState>(
             builder: (sheetContext, state) {
-              // PointerInterceptor ngăn các thao tác chạm bị "lọt" xuống bản đồ bên dưới
               return PointerInterceptor(
                 child: StationListSheet(
                   title: 'Trạm sạc trên lộ trình',
-                  stations: state is StationsOnRouteSuccess ? state.stations : [],
-                  radius: state.radius,
-                  isLoading: state is StationsOnRouteLoading,
-                  onRadiusChanged: (newRadius) {
-                    sheetContext.read<StationsOnRouteBloc>().add(RadiusChanged(newRadius));
-                  },
-                  onRadiusChangeEnd: (newRadius) {
-                    if (routeState.route != null) {
-                      sheetContext.read<StationsOnRouteBloc>().add(RadiusChangeCompleted(routeState.route!));
-                    }
-                  },
+                  stations: state.stations,
+                  isLoading: state.status == StationsOnRouteStatus.loading,
+                  // Tắt hoàn toàn slider
+                  showSlider: false,
+                  // Cung cấp các giá trị giả và hàm rỗng vì không dùng đến
+                  radius: 0,
+                  onRadiusChanged: (_) {},
+                  onRadiusChangeEnd: (_) {},
                 ),
               );
             },
@@ -92,7 +82,7 @@ class _DirectionsLegoState extends State<DirectionsLego> {
     );
   }
 
-  /// Xây dựng ô nhập liệu cho điểm đầu/cuối với chức năng gợi ý địa điểm.
+  // --- CÁC HÀM KHÁC KHÔNG CÓ THAY ĐỔI LỚN ---
   Widget _buildPointInputField({
     required TextEditingController controller,
     required String hintText,
@@ -100,8 +90,8 @@ class _DirectionsLegoState extends State<DirectionsLego> {
     required PointType pointType,
     required String? currentName,
   }) {
+    // ... (Giữ nguyên không đổi)
     final key = ValueKey(currentName ?? hintText);
-
     return Row(
       children: [
         Expanded(
@@ -146,8 +136,8 @@ class _DirectionsLegoState extends State<DirectionsLego> {
     );
   }
 
-  /// Xây dựng menu (nút ba chấm) cho phép chọn vị trí hiện tại hoặc chọn trên bản đồ.
   Widget _buildPointMenuButton(BuildContext context, PointType type) {
+    // ... (Giữ nguyên không đổi)
     return PopupMenuButton<String>(
       onSelected: (value) {
         if (value == 'current_location') {
@@ -180,11 +170,10 @@ class _DirectionsLegoState extends State<DirectionsLego> {
 
   @override
   Widget build(BuildContext context) {
-    // Lắng nghe trạng thái của RouteBloc để cập nhật giao diện
+    // ... (Hàm build chính không đổi)
     return BlocBuilder<RouteBloc, RouteState>(
       builder: (context, state) {
         final bool canFindRoute = state.originPosition != null && state.destinationPosition != null;
-        // Nút "Tìm trạm trên đường" chỉ hiển thị khi đã có kết quả tìm đường thành công
         final bool hasRoute = state is RouteSuccess;
 
         return Column(
@@ -213,7 +202,6 @@ class _DirectionsLegoState extends State<DirectionsLego> {
                     ],
                   ),
                 ),
-                // Nút đảo ngược điểm đầu và cuối
                 IconButton(
                   icon: const Icon(Icons.swap_vert),
                   tooltip: 'Đảo ngược',
@@ -222,19 +210,16 @@ class _DirectionsLegoState extends State<DirectionsLego> {
               ],
             ),
             const SizedBox(height: 16),
-            // Hàng chứa các nút hành động chính
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 children: [
-                  // Nút Tìm đường
                   Expanded(
                     child: ElevatedButton(
                       onPressed: canFindRoute ? () => context.read<RouteBloc>().add(DirectionsFetched()) : null,
                       child: const Text('Tìm đường'),
                     ),
                   ),
-                  // Nút "Tìm trạm trên đường" (hiển thị có điều kiện)
                   if (hasRoute) ...[
                     const SizedBox(width: 16),
                     Expanded(

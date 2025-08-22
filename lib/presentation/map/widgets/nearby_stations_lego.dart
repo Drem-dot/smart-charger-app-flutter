@@ -67,6 +67,7 @@ class _NearbyStationsView extends StatelessWidget {
                   title: 'Trạm sạc gần đây',
                   stations: state is NearbyStationsSuccess ? state.stations : [],
                   radius: state.radius,
+                  showSlider: true,
                   isLoading: state is NearbyStationsLoading,
                   onRadiusChanged: (newRadius) {
                     sheetContext.read<NearbyStationsBloc>().add(RadiusChanged(newRadius));

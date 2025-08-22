@@ -50,7 +50,7 @@ class DirectionsRepositoryImpl implements IDirectionsRepository {
    @override
   Future<List<StationEntity>> getStationsOnRoute({
     required RouteEntity route,
-    required double radiusKm,
+    //required double radiusKm,
   }) async {
     // Chuyển đổi List<LatLng> thành một cấu trúc GeoJSON LineString
     final routeGeometry = {
@@ -63,7 +63,7 @@ class DirectionsRepositoryImpl implements IDirectionsRepository {
         '/api/v1/routes/stations', // Endpoint đã có sẵn trên backend
         data: {
           'routeGeometry': routeGeometry,
-          'radius': radiusKm,
+          'radius': 0.2,
         },
       );
 

@@ -1,3 +1,5 @@
+// station_bloc.dart
+
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,27 +13,38 @@ part 'station_state.dart';
 
 class StationBloc extends Bloc<StationEvent, StationState> {
   final IStationRepository _stationRepository;
-  static const double _gridSize = 0.05;
+  static const double _gridSize = 0.05; // Giả định
 
   StationBloc(this._stationRepository) : super(const StationState()) {
+    // Chỉ xử lý event fetch dữ liệu
     on<StationsInBoundsFetched>(_onStationsInBoundsFetched);
-    on<StationMarkersUpdated>(_onStationMarkersUpdated);
-    on<ClusterManagerInitialized>(_onClusterManagerInitialized);
+    on<FilterStationsRequested>(_onFilterStationsRequested);
+    on<ClearStationFilter>(_onClearStationFilter);
   }
 
-  // Xử lý việc fetch dữ liệu thô
   Future<void> _onStationsInBoundsFetched(
     StationsInBoundsFetched event,
     Emitter<StationState> emit,
   ) async {
-    // ... logic tính toán chunk và gọi repository như cũ ...
+    // --- Logic chunk-loading của sếp được GIỮ NGUYÊN HOÀN TOÀN ---
     final bufferedBounds = _getBufferedBounds(event.visibleBounds, 1.5);
     final requiredChunkIds = _calculateChunksInBounds(bufferedBounds);
     final chunkIdsToFetch = requiredChunkIds.difference(state.loadedChunkIds).toList();
 
     if (chunkIdsToFetch.isEmpty) return;
 
+    // In ra để debug (tùy chọn)
+    // print("Fetching chunks: $chunkIdsToFetch");
+
     final newStations = await _stationRepository.getStationsByChunkIds(chunkIdsToFetch);
+    if (newStations.isEmpty && chunkIdsToFetch.isNotEmpty) {
+        // Nếu không có trạm mới, vẫn đánh dấu chunk đã được load để tránh gọi lại
+        final updatedLoadedChunks = Set<String>.from(state.loadedChunkIds)
+            ..addAll(chunkIdsToFetch);
+        emit(state.copyWith(loadedChunkIds: updatedLoadedChunks));
+        return;
+    }
+    
     final newStationsMap = {for (var s in newStations) s.id: s};
     
     final updatedStations = Map<String, StationEntity>.from(state.stations)
@@ -44,27 +57,18 @@ class StationBloc extends Bloc<StationEvent, StationState> {
       loadedChunkIds: updatedLoadedChunks,
     ));
   }
+  
+  void _onFilterStationsRequested(FilterStationsRequested event, Emitter<StationState> emit) {
+    final filteredMap = {for (var s in event.stationsToShow) s.id: s};
+    emit(state.copyWith(filteredStations: () => filteredMap));
+  }
 
-  // Xử lý yêu cầu cập nhật marker từ Lego
-  void _onStationMarkersUpdated(
-    StationMarkersUpdated event,
-    Emitter<StationState> emit,
-  ) {
-    emit(state.copyWith(markers: event.markers));
+  void _onClearStationFilter(ClearStationFilter event, Emitter<StationState> emit) {
+    emit(state.copyWith(filteredStations: () => null));
   }
-  
-  // Xử lý yêu cầu khởi tạo cluster manager từ Lego
-  void _onClusterManagerInitialized(
-    ClusterManagerInitialized event,
-    Emitter<StationState> emit,
-  ) {
-    final updatedManagers = Set<ClusterManager>.from(state.clusterManagers)
-      ..add(event.clusterManager);
-    emit(state.copyWith(clusterManagers: updatedManagers));
-  }
-  
-  // --- Helper Functions ---
+
   Set<String> _calculateChunksInBounds(LatLngBounds bounds) {
+    // ... (giữ nguyên)
     final int minLatChunk = (bounds.southwest.latitude / _gridSize).floor();
     final int maxLatChunk = (bounds.northeast.latitude / _gridSize).floor();
     final int minLonChunk = (bounds.southwest.longitude / _gridSize).floor();
@@ -80,7 +84,8 @@ class StationBloc extends Bloc<StationEvent, StationState> {
   }
   
   LatLngBounds _getBufferedBounds(LatLngBounds bounds, double factor) {
-    final double latDelta = (bounds.northeast.latitude - bounds.southwest.latitude).abs();
+    // ... (giữ nguyên)
+     final double latDelta = (bounds.northeast.latitude - bounds.southwest.latitude).abs();
     final double lonDelta = (bounds.northeast.longitude - bounds.southwest.longitude).abs();
     final double latPadding = latDelta * (factor - 1) / 2;
     final double lonPadding = lonDelta * (factor - 1) / 2;

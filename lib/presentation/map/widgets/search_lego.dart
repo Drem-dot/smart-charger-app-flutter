@@ -44,6 +44,17 @@ class _SearchViewState extends State<_SearchView> {
   // State để "nhớ" kết quả tìm kiếm cuối cùng
   GeocodingResult? _lastSearchResult;
 
+  // <-- THAY ĐỔI 1: Thêm initState để lắng nghe sự thay đổi của text controller
+  @override
+  void initState() {
+    super.initState();
+    // Thêm listener để gọi setState(), việc này sẽ build lại widget
+    // và giúp cập nhật trạng thái hiển thị của nút "X"
+    _textController.addListener(() {
+      setState(() {});
+    });
+  }
+
   @override
   void dispose() {
     _textController.dispose();
@@ -68,14 +79,17 @@ class _SearchViewState extends State<_SearchView> {
                   prefixIcon: const Icon(Icons.search),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.all(16),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      _textController.clear();
-                      context.read<SearchBloc>().add(const SearchQueryChanged(''));
-                      setState(() => _lastSearchResult = null); // Xóa bộ nhớ
-                    },
-                  ),
+                  // <-- THAY ĐỔI 2: Áp dụng logic hiển thị có điều kiện cho suffixIcon
+                  suffixIcon: _textController.text.isNotEmpty // Chỉ hiển thị khi có text
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _textController.clear();
+                            context.read<SearchBloc>().add(const SearchQueryChanged(''));
+                            setState(() => _lastSearchResult = null); // Xóa bộ nhớ
+                          },
+                        )
+                      : null, // Ẩn đi khi không có text
                 ),
                 onChanged: (query) => context.read<SearchBloc>().add(SearchQueryChanged(query)),
               ),
@@ -167,7 +181,6 @@ class _SearchViewState extends State<_SearchView> {
 
    @override
   Widget build(BuildContext context) {
-    // SỬA LỖI: Trả về trực tiếp Material widget, không bọc trong Positioned
     return Material(
       elevation: 4.0,
       borderRadius: BorderRadius.circular(8.0),

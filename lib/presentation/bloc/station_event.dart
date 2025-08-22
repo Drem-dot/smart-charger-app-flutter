@@ -1,3 +1,5 @@
+// station_event.dart
+
 part of 'station_bloc.dart';
 
 abstract class StationEvent extends Equatable {
@@ -6,7 +8,7 @@ abstract class StationEvent extends Equatable {
   List<Object> get props => [];
 }
 
-// Event từ UI khi camera đứng yên, yêu cầu fetch dữ liệu thô
+// Giữ lại event này, nó là cốt lõi của logic chunk-loading
 class StationsInBoundsFetched extends StationEvent {
   final LatLngBounds visibleBounds;
   const StationsInBoundsFetched(this.visibleBounds);
@@ -14,18 +16,11 @@ class StationsInBoundsFetched extends StationEvent {
   List<Object> get props => [visibleBounds];
 }
 
-// Event từ StationClusterLego, yêu cầu cập nhật Set<Marker> trong state
-class StationMarkersUpdated extends StationEvent {
-  final Set<Marker> markers;
-  const StationMarkersUpdated(this.markers);
-  @override
-  List<Object> get props => [markers];
+class FilterStationsRequested extends StationEvent {
+  final List<StationEntity> stationsToShow;
+  const FilterStationsRequested(this.stationsToShow);
+  @override List<Object> get props => [stationsToShow];
 }
 
-// Event từ StationClusterLego, báo cho BLoC biết về sự tồn tại của ClusterManager
-class ClusterManagerInitialized extends StationEvent {
-  final ClusterManager clusterManager;
-  const ClusterManagerInitialized(this.clusterManager);
-  @override
-  List<Object> get props => [clusterManager];
-}
+/// Yêu cầu BLoC quay trở lại hiển thị tất cả các trạm đã được tải.
+class ClearStationFilter extends StationEvent {}

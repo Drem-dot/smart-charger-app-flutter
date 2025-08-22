@@ -11,6 +11,6 @@ abstract class IDirectionsRepository {
   // Phương thức mới để lấy các trạm sạc trên một lộ trình
   Future<List<StationEntity>> getStationsOnRoute({
     required RouteEntity route,
-    required double radiusKm,
+    //required double radiusKm,
   });
 }

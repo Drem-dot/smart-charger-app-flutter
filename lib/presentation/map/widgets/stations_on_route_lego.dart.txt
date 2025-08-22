@@ -62,6 +62,7 @@ class _StationsOnRouteView extends StatelessWidget {
                   stations: state is StationsOnRouteSuccess ? state.stations : [],
                   radius: state.radius,
                   isLoading: state is StationsOnRouteLoading,
+                  showSlider: false,
                   onRadiusChanged: (newRadius) {
                     sheetContext.read<StationsOnRouteBloc>().add(RadiusChanged(newRadius));
                   },

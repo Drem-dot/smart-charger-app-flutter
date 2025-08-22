@@ -19,3 +19,7 @@
 
 # Tệp log
 *.log
+
+# Google Cloud credentials
+
+**/service-account.json
