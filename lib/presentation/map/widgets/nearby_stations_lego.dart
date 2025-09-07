@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:smart_charger_app/domain/repositories/i_settings_repository.dart';
 import 'package:smart_charger_app/domain/repositories/i_station_repository.dart';
+import 'package:smart_charger_app/presentation/services/location_service.dart';
 
 import '../../bloc/map_control_bloc.dart';
 import '../../bloc/station_selection_bloc.dart';
@@ -19,9 +20,10 @@ class NearbyStationsLego extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => NearbyStationsBloc(
-        context.read<IStationRepository>(),
-        context.read<ISettingsRepository>(),
-      )..add(LoadInitialRadius()),
+        stationRepository: context.read<IStationRepository>(),
+        settingsRepository: context.read<ISettingsRepository>(),
+        locationService: context.read<LocationService>(),
+      )..add(InitialStationsRequested()),
       child: _NearbyStationsView(currentUserPosition: currentUserPosition),
     );
   }
@@ -65,10 +67,10 @@ class _NearbyStationsView extends StatelessWidget {
               return PointerInterceptor(
                 child: StationListSheet(
                   title: 'Trạm sạc gần đây',
-                  stations: state is NearbyStationsSuccess ? state.stations : [],
+                  stations: state.status == NearbyStationsStatus.success ? state.stations : [],
                   radius: state.radius,
                   showSlider: true,
-                  isLoading: state is NearbyStationsLoading,
+                  isLoading: state.status == NearbyStationsStatus.loading,
                   onRadiusChanged: (newRadius) {
                     sheetContext.read<NearbyStationsBloc>().add(RadiusChanged(newRadius));
                   },

@@ -1,50 +1,74 @@
+// lib/presentation/bloc/stations_on_route_bloc.dart
+
+import 'dart:async'; // <-- Thêm import
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_charger_app/domain/entities/route_entity.dart';
 import 'package:smart_charger_app/domain/entities/station_entity.dart';
 import 'package:smart_charger_app/domain/repositories/i_directions_repository.dart';
-// THÊM MỚI: Import StationBloc và các thành phần của nó
 import 'package:smart_charger_app/presentation/bloc/station_bloc.dart';
+// THÊM MỚI:
+import 'package:smart_charger_app/presentation/bloc/route_bloc.dart';
 
 part 'stations_on_route_event.dart';
 part 'stations_on_route_state.dart';
 
 class StationsOnRouteBloc extends Bloc<StationsOnRouteEvent, StationsOnRouteState> {
   final IDirectionsRepository _directionsRepository;
-  // THÊM MỚI: Cần một tham chiếu đến StationBloc để "ra lệnh"
   final StationBloc _stationBloc;
+  // THÊM MỚI: StreamSubscription để lắng nghe RouteBloc
+  StreamSubscription? _routeSubscription;
 
-  StationsOnRouteBloc(this._directionsRepository, this._stationBloc)
-      : super(const StationsOnRouteState()) {
+  // THAY ĐỔI: Constructor nhận thêm RouteBloc
+  StationsOnRouteBloc({
+    required IDirectionsRepository directionsRepository,
+    required StationBloc stationBloc,
+    required RouteBloc routeBloc,
+  })  : _directionsRepository = directionsRepository,
+        _stationBloc = stationBloc,
+        super(const StationsOnRouteState()) {
+    
+    // Đăng ký lắng nghe stream của RouteBloc ngay khi được tạo
+    _routeSubscription = routeBloc.stream.listen((routeState) {
+      if (routeState is RouteSuccess && routeState.route != null) {
+        // Nếu có tuyến đường mới, tự động bắn event để tìm trạm
+        add(FindStationsForRoute(routeState.route!));
+      } else {
+        // Nếu không có tuyến đường (bị hủy), tự động reset
+        add(ResetStationsOnRoute());
+      }
+    });
+
     on<FindStationsForRoute>(_onFindStationsForRoute);
     on<ResetStationsOnRoute>(_onReset);
+  }
+
+  // THÊM MỚI: Hủy subscription khi BLoC bị đóng
+  @override
+  Future<void> close() {
+    _routeSubscription?.cancel();
+    return super.close();
   }
 
   Future<void> _onFindStationsForRoute(
     FindStationsForRoute event,
     Emitter<StationsOnRouteState> emit,
   ) async {
-    // TỐI ƯU HÓA: Nếu tuyến đường mới giống hệt tuyến đường đã tìm thành công trước đó,
-    // chỉ cần áp dụng lại bộ lọc và không làm gì thêm.
+    // Logic cache không đổi, vẫn rất hiệu quả
     if (state.status == StationsOnRouteStatus.success && state.lastSuccessfulRoute == event.route) {
       _stationBloc.add(FilterStationsRequested(state.stations));
-      // Hiển thị lại sheet với dữ liệu cũ
       emit(state.copyWith(status: StationsOnRouteStatus.success));
       return;
     }
     
     emit(state.copyWith(status: StationsOnRouteStatus.loading));
     try {
-      // Gọi repository (bán kính đã được cố định bên trong)
       final stations = await _directionsRepository.getStationsOnRoute(route: event.route);
-      
-      // "Ra lệnh" cho StationBloc chỉ hiển thị các trạm này trên bản đồ
       _stationBloc.add(FilterStationsRequested(stations));
-      
       emit(state.copyWith(
         status: StationsOnRouteStatus.success, 
         stations: stations, 
-        lastSuccessfulRoute: () => event.route // Lưu lại tuyến đường thành công
+        lastSuccessfulRoute: () => event.route
       ));
     } catch (e) {
       emit(state.copyWith(status: StationsOnRouteStatus.failure, error: e.toString()));
@@ -55,9 +79,7 @@ class StationsOnRouteBloc extends Bloc<StationsOnRouteEvent, StationsOnRouteStat
     ResetStationsOnRoute event,
     Emitter<StationsOnRouteState> emit,
   ) {
-    // Quay BLoC này về trạng thái ban đầu
     emit(const StationsOnRouteState());
-    // Đồng thời ra lệnh cho StationBloc xóa bộ lọc
     _stationBloc.add(ClearStationFilter());
   }
 }

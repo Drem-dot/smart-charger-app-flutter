@@ -1,4 +1,5 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:smart_charger_app/domain/entities/filter_params.dart';
 import '../entities/station_entity.dart';
 
 abstract class IStationRepository {
@@ -7,7 +8,7 @@ abstract class IStationRepository {
   // Phương thức mới để tìm các trạm xung quanh
   Future<List<StationEntity>> getNearbyStations({
     required LatLng position,
-    required double radiusKm,
+    required double radiusKm, int? limit, FilterParams? filterParams,
   });
 
   Future<StationEntity> createStation(Map<String, dynamic> stationData);

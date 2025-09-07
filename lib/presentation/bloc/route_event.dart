@@ -28,7 +28,7 @@ class DestinationUpdated extends RouteEvent {
 class RoutePointsSwapped extends RouteEvent {}
 
 // Bắt đầu tìm đường (sẽ sử dụng origin/destination từ state)
-class DirectionsFetched extends RouteEvent {}
+//class DirectionsFetched extends RouteEvent {}
 
 // Xóa mọi thứ (lộ trình, điểm đầu, điểm cuối)
 class RouteCleared extends RouteEvent {}

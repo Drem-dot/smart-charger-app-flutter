@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb; // <-- Import hằng số kIsWeb
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 class StationMarkerWidget extends StatelessWidget {
@@ -13,58 +13,61 @@ class StationMarkerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // --- TỐI ƯU HÓA: Kích thước tùy biến theo nền tảng ---
-    
-    // Khai báo các biến kích thước
-    final double mainCircleSize;
-    final double iconSize;
-    final double badgeSize;
-    final double borderWidth;
-    final double badgeOffset;
-    final EdgeInsets padding;
+    // Luôn lấy theme để có màu sắc đồng bộ
+    final theme = Theme.of(context);
 
-    if (kIsWeb) {
-      // --- Kích thước cho WEB (nhỏ bằng 50%) ---
-      mainCircleSize = isFocused ? 24.0 : 20.0;
-      iconSize = isFocused ? 14.0 : 11.0;
-      badgeSize = isFocused ? 11.0 : 10.0;
-      borderWidth = isFocused ? 1.25 : 1.0;
-      badgeOffset = -2.0; // Vị trí của nhãn số
-      padding = const EdgeInsets.all(2.0); // Padding cho khung vẽ
-    } else {
-      // --- Kích thước cho MOBILE (100% - Kích thước ban đầu) ---
-      mainCircleSize = isFocused ? 48.0 : 40.0;
-      iconSize = isFocused ? 28.0 : 22.0;
-      badgeSize = isFocused ? 22.0 : 20.0;
-      borderWidth = isFocused ? 2.5 : 2.0;
-      badgeOffset = -4.0;
-      padding = const EdgeInsets.all(4.0);
-    }
+    // --- LOGIC MÀU SẮC ĐÚNG CHUẨN ---
+    // Sử dụng ColorScheme thay vì primaryColor deprecated
+    final Color primary = Color(0xFF14A800); // Màu xanh lá cây từ AppTheme
+    final Color onPrimary = theme.colorScheme.onPrimary; // Màu trắng từ AppTheme
+    final Color surface = theme.colorScheme.surface; // Nền trắng từ AppTheme
 
-    // Các biến màu sắc không đổi
-    final Color borderColor = isFocused ? Colors.blue.shade600 : Colors.green.shade700;
-    
-    // Giao diện widget sử dụng các biến đã được tính toán ở trên
+    // isFocused: Giống FilledButton (nền màu chính, nội dung màu trắng)
+    // !isFocused: Giống OutlinedButton (nền trắng, viền và nội dung màu chính)
+    final Color backgroundColor = isFocused ? primary : surface;
+    final Color foregroundColor = isFocused ? onPrimary : primary;
+    final double borderWidth = isFocused ? 0 : 1.5;
+
+    // Kích thước tùy biến theo nền tảng
+    final double mainCircleSize = kIsWeb ? (isFocused ? 24.0 : 20.0) : (isFocused ? 48.0 : 40.0);
+    final double iconSize = kIsWeb ? (isFocused ? 14.0 : 11.0) : (isFocused ? 28.0 : 22.0);
+    final double badgeSize = kIsWeb ? (isFocused ? 11.0 : 10.0) : (isFocused ? 22.0 : 20.0);
+    final double badgeOffset = kIsWeb ? -2.0 : -4.0;
+    final EdgeInsets padding = kIsWeb ? const EdgeInsets.all(2.0) : const EdgeInsets.all(4.0);
+
     return Padding(
       padding: padding,
       child: Stack(
         clipBehavior: Clip.none,
+        alignment: Alignment.center,
         children: [
+          // HÌNH TRÒN CHÍNH
           Container(
             width: mainCircleSize,
             height: mainCircleSize,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: backgroundColor,
               shape: BoxShape.circle,
-              border: Border.all(color: borderColor, width: borderWidth),
-              boxShadow: const [
-                BoxShadow(color: Colors.black26, blurRadius: 3, offset: Offset(0, 1)),
+              border: Border.all(color: primary, width: borderWidth),
+              boxShadow: [
+                BoxShadow(
+                  color: isFocused ? Colors.black.withValues(alpha: .3) : Colors.black.withValues(alpha: .15),
+                  blurRadius: isFocused ? 8 : 4,
+                  offset: isFocused ? const Offset(0, 4) : const Offset(0, 2),
+                ),
               ],
             ),
+            // ICON `ev_station`
             child: Center(
-              child: Icon(Icons.ev_station, color: borderColor, size: iconSize),
+              child: Icon(
+                Icons.ev_station,
+                color: foregroundColor,
+                size: iconSize,
+              ),
             ),
           ),
+
+          // NHÃN SỐ
           Positioned(
             top: badgeOffset,
             right: badgeOffset,
@@ -72,15 +75,15 @@ class StationMarkerWidget extends StatelessWidget {
               width: badgeSize,
               height: badgeSize,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: backgroundColor,
                 shape: BoxShape.circle,
-                border: Border.all(color: borderColor, width: 1.5), // Viền badge có thể giữ cố định
+                border: Border.all(color: foregroundColor, width: 1.0), 
               ),
               child: Center(
                 child: Text(
                   count.toString(),
                   style: TextStyle(
-                    color: Colors.black87,
+                    color: foregroundColor,
                     fontSize: badgeSize * 0.6,
                     fontWeight: FontWeight.bold,
                   ),

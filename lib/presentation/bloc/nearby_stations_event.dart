@@ -6,13 +6,14 @@ abstract class NearbyStationsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadInitialRadius extends NearbyStationsEvent {}
+class InitialStationsRequested extends NearbyStationsEvent {}
 
 class FetchNearbyStations extends NearbyStationsEvent {
   final LatLng position;
-  const FetchNearbyStations(this.position);
+  final int? limit;
+  const FetchNearbyStations(this.position, {this.limit});
   @override
-  List<Object> get props => [position];
+  List<Object?> get props => [position, limit];
 }
 
 class RadiusChanged extends NearbyStationsEvent {
@@ -27,4 +28,16 @@ class RadiusChangeCompleted extends NearbyStationsEvent {
     const RadiusChangeCompleted(this.position);
     @override
     List<Object> get props => [position];
+}
+
+class FilterApplied extends NearbyStationsEvent {
+  final FilterParams filterParams;
+  const FilterApplied(this.filterParams);
+  @override List<Object> get props => [filterParams];
+}
+
+class FetchStationsAroundPoint extends NearbyStationsEvent {
+  final LatLng point;
+  const FetchStationsAroundPoint(this.point);
+  @override List<Object> get props => [point];
 }

@@ -32,21 +32,22 @@ class DirectionsButtonLego extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
+    final theme = Theme.of(context);
+    
+    return ElevatedButton(
       // Truyền context vào hàm để có thể hiển thị SnackBar
       onPressed: () => _launchDirections(context),
-      icon: const Icon(Icons.directions),
-      label: const Text('Dẫn đường'),
       style: ElevatedButton.styleFrom(
-        // Sếp có thể tùy chỉnh màu sắc tại đây
-        backgroundColor: Colors.blue,
+        backgroundColor: theme.primaryColor,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        minimumSize: const Size(0, 36),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0), // Bo tròn các góc
+          borderRadius: BorderRadius.circular(4.0), // Bo tròn nhẹ giống OutlinedButton
         ),
       ),
+      child: const Text('Dẫn đường'),
     );
   }
 }

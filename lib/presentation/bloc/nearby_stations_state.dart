@@ -1,30 +1,46 @@
+// lib/presentation/bloc/nearby_stations_state.dart
+
 part of 'nearby_stations_bloc.dart';
 
-abstract class NearbyStationsState extends Equatable {
-  final double radius;
-  const NearbyStationsState({required this.radius});
-  @override
-  List<Object> get props => [radius];
-}
+enum NearbyStationsStatus { initial, loading, success, failure }
 
-class NearbyStationsInitial extends NearbyStationsState {
-  const NearbyStationsInitial({required super.radius});
-}
-
-class NearbyStationsLoading extends NearbyStationsState {
-  const NearbyStationsLoading({required super.radius});
-}
-
-class NearbyStationsSuccess extends NearbyStationsState {
+class NearbyStationsState extends Equatable {
+  final NearbyStationsStatus status;
   final List<StationEntity> stations;
-  const NearbyStationsSuccess({required this.stations, required super.radius});
-  @override
-  List<Object> get props => [stations, radius];
-}
+  final double radius;
+  final Position? currentUserPosition;
+  final String? error;
+  final FilterParams filterParams;
 
-class NearbyStationsFailure extends NearbyStationsState {
-  final String error;
-  const NearbyStationsFailure({required this.error, required super.radius});
+  const NearbyStationsState({
+    this.status = NearbyStationsStatus.initial,
+    this.stations = const [],
+    required this.radius,
+    this.currentUserPosition,
+    this.error,
+    this.filterParams = const FilterParams.empty(),
+  });
+
+  // --- HÀM copyWith ĐÃ ĐƯỢC SỬA LỖI ---
+  NearbyStationsState copyWith({
+    NearbyStationsStatus? status,
+    List<StationEntity>? stations,
+    double? radius,
+    Position? currentUserPosition,
+    String? error,
+    FilterParams? filterParams, // <-- Thêm tham số này
+  }) {
+    return NearbyStationsState(
+      status: status ?? this.status,
+      stations: stations ?? this.stations,
+      radius: radius ?? this.radius,
+      currentUserPosition: currentUserPosition ?? this.currentUserPosition,
+      error: error ?? this.error,
+      filterParams: filterParams ?? this.filterParams, // <-- Gán giá trị
+    );
+  }
+
   @override
-  List<Object> get props => [error, radius];
+  // --- Thêm filterParams vào props ---
+  List<Object?> get props => [status, stations, radius, currentUserPosition, error, filterParams];
 }

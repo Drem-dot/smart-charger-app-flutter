@@ -1,4 +1,5 @@
 // lib/presentation/map/widgets/user_location_lego.dart
+
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,16 +9,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../services/location_service.dart';
 
 class UserLocationLego extends StatefulWidget {
-  // SỬA ĐỔI: Các tham số được truyền từ MapView
+  // --- THAY ĐỔI: Chỉ cần một callback để trả về marker ---
   final Function(Marker?) onUserMarkerUpdated;
-  final VoidCallback onPressed;
-  final bool isLoading;
 
   const UserLocationLego({
     super.key, 
     required this.onUserMarkerUpdated,
-    required this.onPressed,
-    this.isLoading = false,
   });
   
   @override
@@ -25,7 +22,6 @@ class UserLocationLego extends StatefulWidget {
 }
 
 class _UserLocationLegoState extends State<UserLocationLego> {
-  // SỬA LỖI: Chỉ giữ lại logic liên quan đến stream cho web marker
   final LocationService _locationService = LocationService();
   StreamSubscription<Position>? _locationSubscription;
   BitmapDescriptor? _userIcon;
@@ -42,13 +38,12 @@ class _UserLocationLegoState extends State<UserLocationLego> {
     super.dispose();
   }
 
-  // Logic này vẫn đúng vì nó chỉ giao tiếp ngược lên cha
   Future<void> _initializeUserLocationStream() async {
+    // Logic này chỉ chạy trên Web để hiển thị marker tùy chỉnh
     if (kIsWeb) {
       _userIcon = await BitmapDescriptor.asset(
         const ImageConfiguration(size: Size(24, 24)), 'assets/icons/user_marker.png');
         
-      // Xin quyền trước khi lắng nghe
       final hasPermission = await _locationService.requestPermissionAndService();
       if (!hasPermission || !mounted) return;
 
@@ -59,21 +54,21 @@ class _UserLocationLegoState extends State<UserLocationLego> {
           position: LatLng(position.latitude, position.longitude),
           icon: _userIcon!,
           anchor: const Offset(0.5, 0.5),
-          zIndexInt: 1,
+          zIndexInt: 1, // zIndex là double, không phải zIndexInt
         );
         widget.onUserMarkerUpdated(userMarker);
       });
+    } else {
+      // Trên mobile, myLocationEnabled=true đã hiển thị chấm xanh mặc định,
+      // không cần marker tùy chỉnh, nên không cần làm gì cả.
+      widget.onUserMarkerUpdated(null);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // SỬA LỖI: Trả về trực tiếp FloatingActionButton, không bọc trong PointerInterceptor
-    return FloatingActionButton(
-      onPressed: widget.onPressed,
-      child: widget.isLoading
-          ? const CircularProgressIndicator(color: Colors.white)
-          : const Icon(Icons.my_location),
-    );
+    // --- THAY ĐỔI: Widget này bây giờ là một "Lego chìm", không có giao diện ---
+    // Nó chỉ tồn tại để quản lý logic và giao tiếp với MapView.
+    return const SizedBox.shrink();
   }
 }

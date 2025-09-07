@@ -53,6 +53,17 @@ dependencies:
   google_maps_cluster_manager_2: ^3.2.0
   widget_to_marker: ^1.0.6
   flutter_launcher_icons: ^0.14.4
+  google_fonts: ^6.3.1
+  flutter_localizations: # <-- Thêm dòng này
+    sdk: flutter         # <-- Thêm dòng này
+  intl: any  
+  shadcn_flutter: ^0.0.32
+  shadcn_ui: ^0.29.2
+  material_symbols_icons: ^4.2867.0
+  carousel_slider: ^5.1.1
+  share_plus: ^11.1.0
+  uuid: ^4.5.1
+  flutter_secure_storage: ^9.2.4
 
 dev_dependencies:
   flutter_test:
@@ -73,7 +84,7 @@ flutter:
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
-  # the material Icons class.
+  generate: true
   uses-material-design: true
   assets:
       - .env
