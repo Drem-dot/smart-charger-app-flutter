@@ -1,7 +1,10 @@
 // lib/domain/entities/station_entity.dart
 
 import 'package:equatable/equatable.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart'; // Import để sử dụng LatLng
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+// --- THÊM ENUM ĐỂ QUẢN LÝ LOẠI TRẠM ---
+enum StationType { car, bike, unknown }
 
 class StationEntity extends Equatable {
   final String id;
@@ -14,15 +17,17 @@ class StationEntity extends Equatable {
   final String status;
   final double ratingsAverage;
   final int ratingsQuantity;
-  // --- THÊM MỚI: Các thuộc tính được yêu cầu ---
   final Map<String, int> numConnectorsByPower;
   final String? operatingHours;
   final String? pricingDetails;
   final String? chunkId;
-
+  final List<String> imageUrls;
   final double? distanceInKm;
 
-   const StationEntity({
+  // --- THÊM TRƯỜNG MỚI ---
+  final StationType stationType;
+
+  const StationEntity({
     required this.id,
     required this.name,
     required this.address,
@@ -31,7 +36,6 @@ class StationEntity extends Equatable {
     required this.powerKw,
     required this.connectorTypes,
     required this.status,
-    // Thêm vào constructor
     required this.numConnectorsByPower,
     this.operatingHours,
     this.pricingDetails,
@@ -39,17 +43,24 @@ class StationEntity extends Equatable {
     required this.ratingsAverage,
     required this.ratingsQuantity,
     this.distanceInKm,
+    this.imageUrls = const [],
+    // --- THÊM VÀO CONSTRUCTOR VỚI GIÁ TRỊ MẶC ĐỊNH ---
+    this.stationType = StationType.unknown, 
   });
 
-  // --- THÊM MỚI: Getter tiện ích ---
-  /// Cung cấp vị trí dưới dạng đối tượng LatLng.
   LatLng get position => LatLng(lat, lon);
 
-  /// Tính tổng số cổng sạc từ map numConnectorsByPower.
-  int get totalConnectors =>
-      numConnectorsByPower.values.fold(0, (sum, count) => sum + count);
+  int get totalConnectors {
+    // Sửa lại logic tính tổng cho Map<String, int>
+    if (numConnectorsByPower.isEmpty) return 0;
+    return numConnectorsByPower.values.fold(0, (sum, count) => sum + count);
+  }
+
+  // --- CẬP NHẬT `copyWith` ---
   StationEntity copyWith({
     double? distanceInKm,
+    List<String>? imageUrls,
+    StationType? stationType, // Thêm vào đây
   }) {
     return StationEntity(
       id: id,
@@ -67,55 +78,63 @@ class StationEntity extends Equatable {
       ratingsAverage: ratingsAverage,
       ratingsQuantity: ratingsQuantity,
       distanceInKm: distanceInKm ?? this.distanceInKm,
+      imageUrls: imageUrls ?? this.imageUrls,
+      stationType: stationType ?? this.stationType, // Thêm vào đây
     );
   }
 
+  // --- CẬP NHẬT `factory fromJson` ---
   factory StationEntity.fromJson(Map<String, dynamic> json) {
-    final coordinates =
-        json['location']?['coordinates'] as List<dynamic>? ?? [0.0, 0.0];
+    final coordinates = json['location']?['coordinates'] as List<dynamic>? ?? [0.0, 0.0];
     final powerList = json['power_kw'] as List<dynamic>? ?? [];
     final parsedPowerKw = powerList.map((p) => (p as num).toDouble()).toList();
     final connectorList = json['connector_types'] as List<dynamic>? ?? [];
     final parsedConnectors = connectorList.map((c) => c.toString()).toList();
 
+    // Logic để parse stationType từ chuỗi 'car' hoặc 'bike'
+    StationType typeFromString(String? typeStr) {
+      switch (typeStr) {
+        case 'car':
+          return StationType.car;
+        case 'bike':
+          return StationType.bike;
+        default:
+          return StationType.unknown;
+      }
+    }
+
     return StationEntity(
-      id: json['_id'] as String? ?? '',
+      id: json['_id'] as String? ?? json['sourceId'] as String? ?? '', // Hỗ trợ cả _id và sourceId
       name: json['name'] as String? ?? 'Unknown Station',
       address: json['address'] as String? ?? 'No address provided',
-      lat:
-          (coordinates.length > 1 ? coordinates[1] as num? : 0.0)?.toDouble() ??
-          0.0,
-      lon:
-          (coordinates.isNotEmpty ? coordinates[0] as num? : 0.0)?.toDouble() ??
-          0.0,
+      lat: (coordinates.length > 1 ? coordinates[1] as num? : 0.0)?.toDouble() ?? 0.0,
+      lon: (coordinates.isNotEmpty ? coordinates[0] as num? : 0.0)?.toDouble() ?? 0.0,
       powerKw: parsedPowerKw,
       connectorTypes: parsedConnectors,
       status: json['status'] as String? ?? 'unknown',
-
-      // --- THÊM MỚI: Parse dữ liệu mới từ JSON ---
-      // Giả định backend trả về field 'num_connectors_by_power' là một Map.
-      numConnectorsByPower: Map<String, int>.from(
-        json['num_connectors_by_power'] ?? {},
-      ),
+      // Sửa lại logic parse cho Map<String, int>
+      numConnectorsByPower: Map<String, int>.from(json['num_connectors_by_power'] ?? {}),
       operatingHours: json['operating_hours'] as String?,
       pricingDetails: json['pricing_details'] as String?,
       chunkId: json['chunkId'] as String?,
       ratingsAverage: (json['ratingsAverage'] as num?)?.toDouble() ?? 4.5,
-
-      // Cung cấp giá trị mặc định là 0
       ratingsQuantity: json['ratingsQuantity'] as int? ?? 0,
+      imageUrls: List<String>.from(json['imageUrls'] ?? []),
+      stationType: typeFromString(json['stationType'] as String?), // <-- GÁN GIÁ TRỊ MỚI
     );
   }
 
+  // --- CẬP NHẬT `props` ---
   @override
   List<Object?> get props => [
     id, name, address, lat, lon, powerKw, connectorTypes, status,
-    // Thêm vào props để Equatable so sánh
     numConnectorsByPower,
     operatingHours,
     pricingDetails,
     chunkId,
     ratingsAverage,
     ratingsQuantity,
+    imageUrls,
+    stationType, // <-- THÊM VÀO ĐÂY
   ];
 }

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:smart_charger_app/config/constants.dart';
 // Import Repositories và Services
 import 'package:smart_charger_app/data/repositories/directions_repository_impl.dart';
 import 'package:smart_charger_app/data/repositories/geocoding_repository_impl.dart';
@@ -50,27 +51,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dio = Dio(BaseOptions(baseUrl: 'http://116.118.61.227:3000'));
-
     // --- TOÀN BỘ PROVIDER ĐƯỢC "NÂNG" LÊN ĐÂY ---
     return MultiRepositoryProvider(
       providers:  [
         // --- BƯỚC 1: Cung cấp các Service độc lập trước ---
+        Provider<Dio>(
+          create: (_) => Dio(BaseOptions(baseUrl: AppConfig.baseUrl)),
+        ),
         Provider<IFeedbackService>(create: (_) => FeedbackServiceImpl()),
         Provider<LocationService>(create: (_) => LocationService()),
         Provider<AnonymousIdentityService>(create: (_) => AnonymousIdentityService()),
         
         // --- BƯỚC 2: Cung cấp các Repository ---
-        RepositoryProvider<IStationRepository>(create: (_) => StationRepositoryImpl(dio)),
-        RepositoryProvider<IGeocodingRepository>(create: (_) => GeocodingRepositoryImpl(dio)),
-        RepositoryProvider<IDirectionsRepository>(create: (_) => DirectionsRepositoryImpl(dio: dio)),
+        RepositoryProvider<IStationRepository>(create: (context) => StationRepositoryImpl(context.read<Dio>())),
+        RepositoryProvider<IGeocodingRepository>(create: (context) => GeocodingRepositoryImpl(context.read<Dio>())),
+        RepositoryProvider<IDirectionsRepository>(create: (context) => DirectionsRepositoryImpl(dio: context.read<Dio>())),
         RepositoryProvider<ISettingsRepository>(create: (_) => SettingsRepositoryImpl()),
         
         // Repository này phụ thuộc vào một Service, nên đặt sau khi Service đã được cung cấp
         RepositoryProvider<IReviewRepository>(
           create: (context) => ReviewRepositoryImpl(
-            dio,
-            context.read<AnonymousIdentityService>(), // Bây giờ sẽ tìm thấy
+            context.read<Dio>(),
+            context.read<AnonymousIdentityService>(),
           ),
         ),
       ],

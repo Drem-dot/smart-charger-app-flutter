@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_charger_app/config/constants.dart';
 import 'package:smart_charger_app/domain/entities/review_entity.dart';
 import 'package:smart_charger_app/domain/entities/station_entity.dart';
 import 'package:smart_charger_app/domain/repositories/i_review_repository.dart';
@@ -24,12 +25,17 @@ class StationReviewLego extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Divider(height: 32),
-          Text('Đánh giá & Bình luận', style: Theme.of(context).textTheme.titleLarge),
+          StationImages(imageUrls: station.imageUrls),
+          const Divider(height: 32),
+          Text(
+            'Đánh giá & Bình luận',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 16),
-          
+
           // Widget này sẽ tự quyết định hiển thị form nào
-          const _ReviewFormManager(),
-          
+          _ReviewFormManager(station: station),
+
           const SizedBox(height: 24),
           const _ReviewList(),
         ],
@@ -40,7 +46,8 @@ class StationReviewLego extends StatelessWidget {
 
 /// Widget điều phối, quyết định hiển thị form Tạo mới hay Sửa/Xóa
 class _ReviewFormManager extends StatelessWidget {
-  const _ReviewFormManager();
+  final StationEntity station;
+  const _ReviewFormManager( {required this.station});
 
   @override
   Widget build(BuildContext context) {
@@ -51,13 +58,13 @@ class _ReviewFormManager extends StatelessWidget {
           return previous.currentUserReview != current.currentUserReview;
         }
         // Build lại cho các trạng thái khác như loading, initial...
-        return true; 
+        return true;
       },
       builder: (context, state) {
         if (state is ReviewLoadSuccess) {
           // Nếu có review của người dùng -> Hiển thị form Sửa/Xóa
           if (state.currentUserReview != null) {
-            return _EditReviewForm(review: state.currentUserReview!);
+            return _EditReviewForm(review: state.currentUserReview!,station: station);
           }
         }
         // Mặc định hoặc khi chưa có review -> Hiển thị form Tạo mới
@@ -80,13 +87,17 @@ class _NewReviewFormState extends State<_NewReviewForm> {
 
   void _submitReview() {
     if (_selectedRating == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng chọn số sao.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Vui lòng chọn số sao.')));
       return;
     }
-    context.read<ReviewBloc>().add(ReviewSubmitted(
-      rating: _selectedRating,
-      comment: _commentController.text,
-    ));
+    context.read<ReviewBloc>().add(
+      ReviewSubmitted(
+        rating: _selectedRating,
+        comment: _commentController.text,
+      ),
+    );
     _commentController.clear();
     setState(() => _selectedRating = 0);
     FocusScope.of(context).unfocus();
@@ -103,15 +114,22 @@ class _NewReviewFormState extends State<_NewReviewForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(5, (index) {
                 return IconButton(
-                  icon: Icon(_selectedRating > index ? Icons.star : Icons.star_border, color: Colors.amber),
-                  onPressed: isSubmitting ? null : () => setState(() => _selectedRating = index + 1),
+                  icon: Icon(
+                    _selectedRating > index ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
+                  ),
+                  onPressed: isSubmitting
+                      ? null
+                      : () => setState(() => _selectedRating = index + 1),
                 );
               }),
             ),
             const SizedBox(height: 8),
             TextFormField(
               controller: _commentController,
-              decoration: const InputDecoration(hintText: 'Viết bình luận của bạn...'),
+              decoration: const InputDecoration(
+                hintText: 'Viết bình luận của bạn...',
+              ),
               maxLines: 1,
               readOnly: isSubmitting,
             ),
@@ -121,7 +139,11 @@ class _NewReviewFormState extends State<_NewReviewForm> {
               child: ElevatedButton(
                 onPressed: isSubmitting ? null : _submitReview,
                 child: isSubmitting
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Text('Gửi đánh giá'),
               ),
             ),
@@ -135,7 +157,8 @@ class _NewReviewFormState extends State<_NewReviewForm> {
 /// Widget chứa form để SỬA hoặc XÓA một review đã có
 class _EditReviewForm extends StatefulWidget {
   final ReviewEntity review;
-  const _EditReviewForm({required this.review});
+  final StationEntity station;
+  const _EditReviewForm({required this.review, required this.station});
   @override
   State<_EditReviewForm> createState() => __EditReviewFormState();
 }
@@ -152,10 +175,9 @@ class __EditReviewFormState extends State<_EditReviewForm> {
   }
 
   void _updateReview() {
-    context.read<ReviewBloc>().add(ReviewUpdated(
-      rating: _selectedRating,
-      comment: _commentController.text,
-    ));
+    context.read<ReviewBloc>().add(
+      ReviewUpdated(rating: _selectedRating, comment: _commentController.text),
+    );
     FocusScope.of(context).unfocus();
   }
 
@@ -166,7 +188,10 @@ class __EditReviewFormState extends State<_EditReviewForm> {
         title: const Text('Xóa đánh giá?'),
         content: const Text('Bạn có chắc chắn muốn xóa đánh giá này không?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Hủy'),
+          ),
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
@@ -187,21 +212,32 @@ class __EditReviewFormState extends State<_EditReviewForm> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Đánh giá của bạn:', style: Theme.of(context).textTheme.titleMedium),
+
+            Text(
+              'Đánh giá của bạn:',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(5, (index) {
                 return IconButton(
-                  icon: Icon(_selectedRating > index ? Icons.star : Icons.star_border, color: Colors.amber),
-                  onPressed: isSubmitting ? null : () => setState(() => _selectedRating = index + 1),
+                  icon: Icon(
+                    _selectedRating > index ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
+                  ),
+                  onPressed: isSubmitting
+                      ? null
+                      : () => setState(() => _selectedRating = index + 1),
                 );
               }),
             ),
             const SizedBox(height: 8),
             TextFormField(
               controller: _commentController,
-              decoration: const InputDecoration(hintText: 'Sửa bình luận của bạn...'),
+              decoration: const InputDecoration(
+                hintText: 'Sửa bình luận của bạn...',
+              ),
               maxLines: 3,
               readOnly: isSubmitting,
             ),
@@ -230,6 +266,66 @@ class __EditReviewFormState extends State<_EditReviewForm> {
   }
 }
 
+// ... bên trong class _SheetCollapsedContent
+
+class StationImages extends StatelessWidget {
+  final List<String> imageUrls;
+  const StationImages({super.key, required this.imageUrls});
+
+  @override
+  Widget build(BuildContext context) {
+    if (imageUrls.isEmpty) {
+      return const SizedBox.shrink(); // Không có ảnh thì không hiển thị gì
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Hình ảnh', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 100, // Chiều cao của hàng ảnh
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: imageUrls.length,
+            itemBuilder: (context, index) {
+              final String fullImageUrl = AppConfig.baseUrl + imageUrls[index];
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(
+                    fullImageUrl,
+                    width: 150,
+                    height: 100,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: 150,
+                        height: 100,
+                        color: Colors.grey[200],
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 150,
+                        height: 100,
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.broken_image, color: Colors.grey),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
 /// Widget chỉ chịu trách nhiệm hiển thị danh sách các review
 class _ReviewList extends StatelessWidget {
   const _ReviewList();
@@ -239,17 +335,29 @@ class _ReviewList extends StatelessWidget {
     return BlocConsumer<ReviewBloc, ReviewState>(
       listener: (context, state) {
         if (state is ReviewSubmitFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.error)));
         }
       },
       builder: (context, state) {
         if (state is ReviewLoading) {
-          return const Center(child: Padding(padding: EdgeInsets.all(16.0), child: CircularProgressIndicator()));
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
         if (state is ReviewLoadSuccess) {
           final otherReviews = state.reviews.where((r) => !r.isMine).toList();
           if (otherReviews.isEmpty) {
-            return const Center(child: Padding(padding: EdgeInsets.symmetric(vertical: 16.0), child: Text('Chưa có đánh giá nào khác.')));
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text('Chưa có đánh giá nào khác.'),
+              ),
+            );
           }
           return ListView.builder(
             shrinkWrap: true,

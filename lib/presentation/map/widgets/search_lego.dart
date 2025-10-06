@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:smart_charger_app/domain/entities/geocoding_result_entity.dart';
 import 'package:smart_charger_app/domain/repositories/i_geocoding_repository.dart';
 import 'package:smart_charger_app/presentation/bloc/map_control_bloc.dart';
+import 'package:smart_charger_app/presentation/bloc/nearby_stations_bloc.dart';
 import 'package:smart_charger_app/presentation/bloc/route_bloc.dart';
 import 'package:smart_charger_app/presentation/bloc/search_bloc.dart';
 import 'package:smart_charger_app/presentation/map/widgets/directions_lego.dart';
@@ -71,6 +72,9 @@ class _SearchViewState extends State<_SearchView> {
                   _focusNode.unfocus();
                   // Các BLoC này được đọc từ context của _SearchViewState, vốn nằm dưới MapPage, nên an toàn
                   context.read<MapControlBloc>().add(CameraMoveRequested(result.latLng, 16.0));
+                  // 2. (THÊM MỚI) Yêu cầu NearbyStationsBloc cập nhật dữ liệu
+                  // Dùng event FetchStationsAroundPoint đã có sẵn
+                  context.read<NearbyStationsBloc>().add(FetchStationsAroundPoint(result.latLng));
                   context.read<SearchBloc>().add(const SearchQueryChanged(''));
                 },
                 onSwitchToDirections: () {

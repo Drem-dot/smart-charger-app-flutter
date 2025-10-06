@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../../domain/entities/geocoding_result_entity.dart';
@@ -25,6 +28,9 @@ class _AddStationScreenState extends State<AddStationScreen> {
   final _hoursController = TextEditingController();
   final _pricingController = TextEditingController();
   final _operatorController = TextEditingController();
+  final _ownerNameController = TextEditingController();
+  final _ownerPhoneController = TextEditingController();
+  final List<XFile> _selectedImages = []; 
 
   // --- State ---
   LatLng? _selectedPosition;
@@ -88,10 +94,14 @@ class _AddStationScreenState extends State<AddStationScreen> {
             'operating_hours': _hoursController.text,
             'pricing_details': _pricingController.text,
             'network_operator': _operatorController.text,
+            'owner_name': _ownerNameController.text,
+            'owner_phone': _ownerPhoneController.text,
             // 'status' sẽ được backend tự đặt là 'pending_review'
         };
-        // Bắn event, truyền cả position và form data
-        context.read<AddStationBloc>().add(FormSubmitted(formData, _selectedPosition!));
+        _selectedImages.map((xfile) => File(xfile.path)).toList();
+        context.read<AddStationBloc>().add(
+        FormSubmitted(formData, _selectedPosition!, _selectedImages)
+      );
     }
   }
 
@@ -153,7 +163,25 @@ class _AddStationScreenState extends State<AddStationScreen> {
                       const SizedBox(height: 16),
                       TextFormField(controller: _operatorController, decoration: const InputDecoration(labelText: 'Nhà cung cấp mạng lưới')),
                       const SizedBox(height: 32),
-                      
+                      _buildSectionTitle('Thông tin cho Quản trị viên'),
+TextFormField(
+  controller: _ownerNameController,
+  decoration: const InputDecoration(labelText: 'Tên chủ trạm *'),
+  validator: (value) => (value == null || value.isEmpty) ? 'Vui lòng nhập tên chủ trạm' : null,
+),
+const SizedBox(height: 16),
+TextFormField(
+  controller: _ownerPhoneController,
+  decoration: const InputDecoration(labelText: 'Số điện thoại chủ trạm *'),
+  keyboardType: TextInputType.phone, // Bàn phím số
+  validator: (value) => (value == null || value.isEmpty) ? 'Vui lòng nhập số điện thoại' : null,
+),
+const SizedBox(height: 24),
+
+// --- THÊM MỚI: UI UPLOAD ẢNH ---
+_buildSectionTitle('Hình ảnh trạm sạc (tùy chọn)'),
+_buildImagePicker(),
+const SizedBox(height: 32),
                       ElevatedButton(
                         onPressed: state is AddStationInProgress ? null : _submitForm,
                         child: const Text('Gửi thông tin'),
@@ -267,6 +295,125 @@ class _AddStationScreenState extends State<AddStationScreen> {
           },
         );
       }).toList(),
+    );
+  }
+
+  Future<void> _pickImages() async {
+  if (_selectedImages.length >= 4) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Bạn chỉ có thể chọn tối đa 4 ảnh.'))
+    );
+    return;
+  }
+  final ImagePicker picker = ImagePicker();
+  // Lấy nhiều ảnh cùng lúc
+  final List<XFile> images = await picker.pickMultiImage(
+    limit: 4 - _selectedImages.length, // Giới hạn số lượng có thể chọn thêm
+  );
+
+  if (images.isNotEmpty) {
+    setState(() {
+      _selectedImages.addAll(images);
+    });
+  }
+}
+
+// Widget UI để hiển thị ảnh đã chọn và nút thêm ảnh
+Widget _buildImagePicker() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Wrap(
+        spacing: 8.0,
+        runSpacing: 8.0,
+        children: [
+          ..._selectedImages.asMap().entries.map((entry) {
+            int index = entry.key;
+            XFile imageXFile = entry.value;
+            return Stack(
+              children: [
+                _CrossPlatformImage(imageFile: imageXFile, size: 80),
+                
+                Positioned(
+                  top: -8,
+                  right: -8,
+                  child: IconButton(
+                    icon: const Icon(Icons.remove_circle, color: Colors.red),
+                    onPressed: () {
+                      setState(() {
+                        _selectedImages.removeAt(index);
+                      });
+                    },
+                  ),
+                ),
+              ],
+            );
+          }),
+          if (_selectedImages.length < 4)
+            GestureDetector(
+              onTap: _pickImages,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: const Icon(Icons.add_a_photo, color: Colors.grey),
+              ),
+            ),
+        ],
+      ),
+    ],
+  );
+}
+
+}
+
+class _CrossPlatformImage extends StatelessWidget {
+  final XFile imageFile;
+  final double size;
+
+  const _CrossPlatformImage({required this.imageFile, required this.size});
+
+  Future<Uint8List> _getImageBytes() {
+    return imageFile.readAsBytes();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8.0),
+      child: kIsWeb
+          // --- XỬ LÝ CHO WEB ---
+          ? FutureBuilder<Uint8List>(
+              future: _getImageBytes(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                  return Image.memory(
+                    snapshot.data!,
+                    width: size,
+                    height: size,
+                    fit: BoxFit.cover,
+                  );
+                }
+                // Hiển thị loading trong khi đọc bytes
+                return Container(
+                  width: size,
+                  height: size,
+                  color: Colors.grey[200],
+                  child: const Center(child: CircularProgressIndicator()),
+                );
+              },
+            )
+          // --- XỬ LÝ CHO MOBILE (ANDROID/IOS) ---
+          : Image.file(
+              File(imageFile.path),
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+            ),
     );
   }
 }

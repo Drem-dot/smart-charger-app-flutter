@@ -17,10 +17,11 @@ class PositionSelected extends AddStationEvent {
 // Bắn khi người dùng nhấn nút "Gửi" trên form
 class FormSubmitted extends AddStationEvent {
   final Map<String, dynamic> formData;
-  final LatLng position; // Thêm position
-  const FormSubmitted(this.formData, this.position);
+  final LatLng position;
+  final List<XFile> images; 
+  const FormSubmitted(this.formData, this.position, this.images);
   @override
-  List<Object> get props => [formData, position];
+  List<Object> get props => [formData, position , images];
 }
 
 // Bắn để reset BLoC về trạng thái ban đầu

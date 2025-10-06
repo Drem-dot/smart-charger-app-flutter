@@ -1,4 +1,6 @@
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:smart_charger_app/domain/entities/filter_params.dart';
 import '../entities/station_entity.dart';
 
@@ -11,5 +13,5 @@ abstract class IStationRepository {
     required double radiusKm, int? limit, FilterParams? filterParams,
   });
 
-  Future<StationEntity> createStation(Map<String, dynamic> stationData);
+  Future<StationEntity> createStation(Map<String, dynamic> stationData,List<XFile> images);
 }

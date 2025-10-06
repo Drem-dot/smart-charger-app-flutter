@@ -46,6 +46,7 @@ class _MapStateManagerLegoState extends State<MapStateManagerLego> {
           points: routeState.route!.polylinePoints,
           color: Colors.blue,
           width: 5,
+          zIndex: 1, 
         );
         widget.onPolylinesUpdated({newPolyline});
       } else {
@@ -65,6 +66,7 @@ class _MapStateManagerLegoState extends State<MapStateManagerLego> {
         position: routeState.originPosition!,
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
         infoWindow: InfoWindow(title: routeState.originName ?? 'Điểm bắt đầu'),
+        zIndexInt: 4, 
       ));
     }
     if (routeState.destinationPosition != null) {
@@ -73,6 +75,7 @@ class _MapStateManagerLegoState extends State<MapStateManagerLego> {
         position: routeState.destinationPosition!,
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
         infoWindow: InfoWindow(title: routeState.destinationName ?? 'Điểm kết thúc'),
+        zIndexInt: 4, 
       ));
     }
     widget.onRoutePinsUpdated(routePins);

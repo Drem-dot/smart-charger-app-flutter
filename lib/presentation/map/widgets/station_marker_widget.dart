@@ -1,14 +1,17 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:smart_charger_app/domain/entities/station_entity.dart';
 
 class StationMarkerWidget extends StatelessWidget {
   final int count;
   final bool isFocused;
+  final StationType stationType;
 
   const StationMarkerWidget({
     super.key,
     required this.count,
     this.isFocused = false,
+    this.stationType = StationType.car,
   });
 
   @override
@@ -60,7 +63,9 @@ class StationMarkerWidget extends StatelessWidget {
             // ICON `ev_station`
             child: Center(
               child: Icon(
-                Icons.ev_station,
+                stationType == StationType.bike
+                    ? Icons.two_wheeler // Icon cho xe máy
+                    : Icons.ev_station,
                 color: foregroundColor,
                 size: iconSize,
               ),

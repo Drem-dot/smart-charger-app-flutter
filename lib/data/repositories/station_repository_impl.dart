@@ -1,5 +1,10 @@
+
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:smart_charger_app/domain/entities/filter_params.dart';
 import '../../domain/entities/station_entity.dart';
 import '../../domain/repositories/i_station_repository.dart';
@@ -80,21 +85,57 @@ class StationRepositoryImpl implements IStationRepository {
       rethrow;
     }
   }
-  @override
-  Future<StationEntity> createStation(Map<String, dynamic> stationData) async {
+   @override
+  Future<StationEntity> createStation(Map<String, dynamic> data, List<XFile> images) async {
     try {
+      List<MultipartFile> imageFiles = [];
+
+      for (var image in images) {
+        String fileName = image.name; // Dùng image.name thay vì path
+
+        if (kIsWeb) {
+          // --- XỬ LÝ CHO WEB ---
+          // Đọc dữ liệu ảnh dưới dạng bytes
+          var bytes = await image.readAsBytes();
+          // Tạo MultipartFile từ bytes
+          imageFiles.add(MultipartFile.fromBytes(bytes, filename: fileName));
+        } else {
+          // --- XỬ LÝ CHO MOBILE (NHƯ CŨ) ---
+          imageFiles.add(await MultipartFile.fromFile(image.path, filename: fileName));
+        }
+      }
+
+      final formData = FormData.fromMap({
+      // Gửi toàn bộ dữ liệu text dưới dạng một chuỗi JSON
+      'stationData': jsonEncode(data), 
+      
+      if (imageFiles.isNotEmpty) 'images': imageFiles,
+    });
+
       final response = await _dio.post(
         '/api/v1/stations',
-        data: stationData,
+        data: formData,
+        onSendProgress: (int sent, int total) {
+          debugPrint('Upload progress: ${(sent / total * 100).toStringAsFixed(2)}%');
+        },
       );
 
-      if (response.statusCode == 201 && response.data['data']?['station'] != null) {
+      if (response.statusCode == 201) {
         return StationEntity.fromJson(response.data['data']['station']);
       } else {
-        throw Exception('Failed to create station');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to create station'
+        );
       }
+    } on DioException catch (e) {
+      final errorMessage = e.response?.data?['message'] ?? e.message;
+      debugPrint('DioException in createStation: $errorMessage');
+      rethrow;
     } catch (e) {
+      debugPrint('Unknown error in createStation: $e');
       rethrow;
     }
-}
+  }
 }
