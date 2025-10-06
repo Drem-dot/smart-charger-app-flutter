@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/bloc/sheet_drag_state.dart';
 import 'package:smart_charger_app/presentation/bloc/station_selection_bloc.dart';
 import 'package:smart_charger_app/presentation/map/widgets/station_details_sheet_content.dart';
@@ -78,8 +79,8 @@ class _StationDetailsLegoState extends State<StationDetailsLego> {
   else if (state is StationReportSendSuccess) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cảm ơn bạn đã gửi báo cáo!'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.reportSendSuccess),
           backgroundColor: Colors.green,
         ),
       );

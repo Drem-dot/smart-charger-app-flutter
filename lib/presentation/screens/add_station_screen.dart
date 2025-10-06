@@ -10,6 +10,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../../domain/entities/geocoding_result_entity.dart';
 import '../../domain/repositories/i_geocoding_repository.dart';
+import '../../l10n/app_localizations.dart';
 import '../bloc/add_station_bloc.dart';
 
 class AddStationScreen extends StatefulWidget {
@@ -80,7 +81,7 @@ class _AddStationScreenState extends State<AddStationScreen> {
     
     if (_selectedPosition == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Vui lòng chọn một vị trí trên bản đồ.'))
+            SnackBar(content: Text(AppLocalizations.of(context)!.addStationMapPinValidator))
         );
         return;
     }
@@ -111,20 +112,20 @@ class _AddStationScreenState extends State<AddStationScreen> {
       listener: (context, state) {
         if (state is AddStationSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Đã thêm trạm "${state.newStation.name}" thành công!')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.addStationSuccessMessage(state.newStation.name))),
           );
           Navigator.of(context).pop();
         }
         if (state is AddStationFailure) {
            ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: ${state.error}'), backgroundColor: Colors.red),
-          );
+             SnackBar(content: Text('${AppLocalizations.of(context)!.stationListError(state.error)}'), backgroundColor: Colors.red),
+           );
         }
       },
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Thêm Trạm Sạc Mới'),
+            title: Text(AppLocalizations.of(context)!.addStationScreenTitle),
           ),
           body: Stack(
             children: [
@@ -144,47 +145,47 @@ class _AddStationScreenState extends State<AddStationScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _nameController,
-                        decoration: const InputDecoration(labelText: 'Tên trạm sạc *'),
-                        validator: (value) => (value == null || value.isEmpty) ? 'Vui lòng nhập tên' : null,
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.addStationNameLabel),
+                        validator: (value) => (value == null || value.isEmpty) ? AppLocalizations.of(context)!.addStationNameValidator : null,
                       ),
                       const SizedBox(height: 24),
                       
-                      _buildSectionTitle('Loại cổng sạc'),
+                      _buildSectionTitle(AppLocalizations.of(context)!.addStationConnectorType),
                       _buildChipSelector<String>(_availableConnectors, _selectedConnectorTypes, (type) => type),
                       const SizedBox(height: 24),
-
-                      _buildSectionTitle('Công suất (kW)'),
-                      _buildChipSelector<double>(_availablePowers, _selectedPowerKw, (power) => '$power kW'),
+                      
+                      _buildSectionTitle(AppLocalizations.of(context)!.addStationPower),
+ _buildChipSelector<double>(_availablePowers, _selectedPowerKw, (power) => '${power.toString()}kW'),
                       const SizedBox(height: 24),
                       
-                      TextFormField(controller: _hoursController, decoration: const InputDecoration(labelText: 'Giờ hoạt động (ví dụ: 24/7)')),
+                      TextFormField(controller: _hoursController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.addStationOperatingHoursHint)),
                       const SizedBox(height: 16),
-                      TextFormField(controller: _pricingController, decoration: const InputDecoration(labelText: 'Chi tiết giá')),
+                      TextFormField(controller: _pricingController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.addStationPricingDetailsHint)),
                       const SizedBox(height: 16),
-                      TextFormField(controller: _operatorController, decoration: const InputDecoration(labelText: 'Nhà cung cấp mạng lưới')),
+                      TextFormField(controller: _operatorController, decoration: InputDecoration(labelText: AppLocalizations.of(context)!.addStationNetworkOperatorHint)),
                       const SizedBox(height: 32),
-                      _buildSectionTitle('Thông tin cho Quản trị viên'),
+                      _buildSectionTitle(AppLocalizations.of(context)!.addStationAdminInfo),
 TextFormField(
   controller: _ownerNameController,
-  decoration: const InputDecoration(labelText: 'Tên chủ trạm *'),
-  validator: (value) => (value == null || value.isEmpty) ? 'Vui lòng nhập tên chủ trạm' : null,
+  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.addStationOwnerNameLabel),
+  validator: (value) => (value == null || value.isEmpty) ? AppLocalizations.of(context)!.addStationOwnerNameValidator : null,
 ),
 const SizedBox(height: 16),
 TextFormField(
   controller: _ownerPhoneController,
-  decoration: const InputDecoration(labelText: 'Số điện thoại chủ trạm *'),
+  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.addStationOwnerPhoneLabel),
   keyboardType: TextInputType.phone, // Bàn phím số
-  validator: (value) => (value == null || value.isEmpty) ? 'Vui lòng nhập số điện thoại' : null,
+  validator: (value) => (value == null || value.isEmpty) ? AppLocalizations.of(context)!.addStationOwnerPhoneValidator : null,
 ),
 const SizedBox(height: 24),
 
 // --- THÊM MỚI: UI UPLOAD ẢNH ---
-_buildSectionTitle('Hình ảnh trạm sạc (tùy chọn)'),
+_buildSectionTitle(AppLocalizations.of(context)!.addStationImages),
 _buildImagePicker(),
 const SizedBox(height: 32),
                       ElevatedButton(
                         onPressed: state is AddStationInProgress ? null : _submitForm,
-                        child: const Text('Gửi thông tin'),
+                        child: Text(AppLocalizations.of(context)!.addStationSubmitButton),
                       ),
                     ],
                   ),
@@ -211,8 +212,8 @@ const SizedBox(height: 32),
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('Vị trí trên bản đồ *'),
-        const Text('Nhấn để đặt ghim hoặc kéo ghim để chọn vị trí chính xác.', style: TextStyle(color: Colors.grey)),
+        _buildSectionTitle(AppLocalizations.of(context)!.addStationMapLocation),
+        Text(AppLocalizations.of(context)!.addStationMapHint, style: const TextStyle(color: Colors.grey)),
         const SizedBox(height: 8),
         SizedBox(
           height: 250,
@@ -239,11 +240,11 @@ const SizedBox(height: 32),
         return TextFormField(
           controller: controller,
           focusNode: focusNode,
-          decoration: const InputDecoration(
-            labelText: 'Địa chỉ *',
-            hintText: 'Bắt đầu nhập để tìm kiếm...',
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context)!.addStationAddressLabel,
+            hintText: AppLocalizations.of(context)!.addStationAddressHint,
           ),
-          validator: (value) => (value == null || value.isEmpty) ? 'Vui lòng nhập địa chỉ' : null,
+          validator: (value) => (value == null || value.isEmpty) ? AppLocalizations.of(context)!.addStationAddressValidator : null,
         );
       },
       suggestionsCallback: (query) {
@@ -261,9 +262,9 @@ const SizedBox(height: 32),
         _addressController.text = suggestion.address;
         _updatePinLocation(suggestion.latLng);
       },
-      emptyBuilder: (context) => const Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Text('Không tìm thấy địa điểm nào.'),
+      emptyBuilder: (context) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(AppLocalizations.of(context)!.addStationNoAddressFound),
       ),
     );
   }
@@ -301,7 +302,7 @@ const SizedBox(height: 32),
   Future<void> _pickImages() async {
   if (_selectedImages.length >= 4) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Bạn chỉ có thể chọn tối đa 4 ảnh.'))
+      SnackBar(content: Text(AppLocalizations.of(context)!.addStationMaxImages))
     );
     return;
   }

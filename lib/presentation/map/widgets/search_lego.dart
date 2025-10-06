@@ -7,6 +7,7 @@ import 'package:smart_charger_app/presentation/bloc/map_control_bloc.dart';
 import 'package:smart_charger_app/presentation/bloc/nearby_stations_bloc.dart';
 import 'package:smart_charger_app/presentation/bloc/route_bloc.dart';
 import 'package:smart_charger_app/presentation/bloc/search_bloc.dart';
+import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/map/widgets/directions_lego.dart';
 
 enum SearchMode { search, directions }
@@ -103,9 +104,9 @@ class _SearchViewState extends State<_SearchView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0),
-              child: Text('Tìm đường', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Text(AppLocalizations.of(context)!.directionsTitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
             IconButton(
               icon: const Icon(Icons.close),
@@ -151,7 +152,7 @@ class _SearchInputAndResults extends StatelessWidget {
                 controller: textController,
                 focusNode: focusNode,
                 decoration: InputDecoration(
-                  hintText: 'Tìm kiếm địa điểm...',
+                  hintText: AppLocalizations.of(context)!.searchPlaceholder,
                   prefixIcon: const Icon(Icons.search),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.all(16),
@@ -171,7 +172,7 @@ class _SearchInputAndResults extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.directions),
-              tooltip: 'Tìm đường',
+              tooltip: AppLocalizations.of(context)!.directionsTooltip,
               onPressed: onSwitchToDirections,
             ),
           ],

@@ -1,5 +1,175 @@
 {
-  "@@locale": "en",
-  "appName": "Smart Charger",
-  "mapAppBarTitle": "Smart Charger Stations"
+    "@@locale": "en",
+
+    "appName": "Smart Charger",
+
+    "navMap": "Map",
+    "navStationList": "List",
+    "navAddStation": "Add",
+    "navSettings": "Settings",
+
+    "searchPlaceholder": "Search for a place...",
+    "directionsTooltip": "Directions",
+    "directionsTitle": "Directions",
+    "directionsButton": "Directions",
+    "cannotOpenMaps": "Could not open Google Maps.",
+
+    "stationCardDistance": "{distance} km",
+    "@stationCardDistance": {
+        "description": "Displays the distance to the charging station",
+        "placeholders": {
+            "distance": {
+                "type": "String"
+            }
+        }
+    },
+
+    "sheetStationName": "Station Name",
+    "sheetAddress": "Address",
+    "sheetStatusLabel": "Status",
+    "sheetConnectorsLabel": "Connectors",
+    "sheetOperatingHoursLabel": "Operating Hours",
+    "sheetParkingDetailsLabel": "Parking Details",
+    "sheetReportProblemTooltip": "Report an issue",
+    "sheetConnectorDetailsTitle": "Connector Details:",
+    "sheetConnectorTotalTitle": "Total Connectors:",
+    "sheetConnectorInfo": "{count} ports",
+    "@sheetConnectorInfo": {
+        "placeholders": {
+            "count": {
+                "type": "String"
+            }
+        }
+    },
+    "sheetConnectorPowerInfo": "{count} x {power}kW ports",
+    "@sheetConnectorPowerInfo": {
+        "placeholders": {
+            "count": {
+                "type": "String"
+            },
+            "power": {
+                "type": "String"
+            }
+        }
+    },
+    "noInfo": "Not available",
+
+    "addStationScreenTitle": "Add New Station",
+    "addStationMapLocation": "Location on Map *",
+    "addStationMapHint": "Tap to place a pin or drag the pin for the exact location.",
+    "addStationNameLabel": "Station Name *",
+    "addStationNameValidator": "Please enter a name",
+    "addStationAddressLabel": "Address *",
+    "addStationAddressHint": "Start typing to search...",
+    "addStationAddressValidator": "Please enter an address",
+    "addStationNoAddressFound": "No places found.",
+    "addStationConnectorType": "Connector Types",
+    "addStationPower": "Power (kW)",
+    "addStationOperatingHoursHint": "Operating hours (e.g., 24/7)",
+    "addStationPricingDetailsHint": "Pricing details",
+    "addStationNetworkOperatorHint": "Network operator",
+    "addStationAdminInfo": "Information for Admin",
+    "addStationOwnerNameLabel": "Owner Name *",
+    "addStationOwnerNameValidator": "Please enter owner's name",
+    "addStationOwnerPhoneLabel": "Owner Phone Number *",
+    "addStationOwnerPhoneValidator": "Please enter phone number",
+    "addStationImages": "Station Images (optional)",
+    "addStationSubmitButton": "Submit",
+    "addStationSuccessMessage": "\"{stationName}\" has been added and is pending review.",
+    "@addStationSuccessMessage": {
+        "placeholders": {
+            "stationName": {
+                "type": "String"
+            }
+        }
+    },
+    "addStationMapPinValidator": "Please select a location on the map.",
+    "addStationMaxImages": "You can only select up to 4 images.",
+
+    "stationListPageTitle": "Station List",
+    "stationListPageSearchHint": "Search by location...",
+    "stationListError": "Error: {error}",
+    "@stationListError": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "stationListEmpty": "No charging stations found.",
+
+    "settingsPageTitle": "Settings & Info",
+    "settingsPartnership": "Partnership Introduction",
+    "settingsUserGuide": "User Guide",
+    "settingsOwnerGuide": "Station Owner Guide",
+    "settingsShareApp": "Share App",
+    "settingsShareAppMessage": "Check out Smart Charger!",
+
+    "ownerGuideTitle": "List Your Charging Station on the Map",
+    "ownerGuideIntro": "Thank you for your interest in contributing to the Smart Charger network. Listing your charging station on our system is completely free and takes only a few minutes.",
+    "ownerGuideStep1Title": "Step 1: Prepare Information",
+    "ownerGuideStep1Content": "To ensure a smooth station addition process, please have the following information ready:\n• Exact name of the charging station.\n• Detailed address.\n• Precise location on the map (you will select it by dropping a pin).\n• Number and type of connectors (e.g., CCS2, Type 2...).\n• Power output of each connector type (e.g., 60kW, 120kW...).\n• Operating hours (e.g., 24/7, 8 AM - 10 PM).\n• Pricing details or parking fees (if any).",
+    "ownerGuideStep2Title": "Step 2: Use the \"Add Station\" Feature",
+    "ownerGuideStep2Content": "• From the main map screen, tap the \"Add Station\" button (plus icon).\n• A small map will appear; move and long-press to \"drop a pin\" at your station's exact location, then tap \"Confirm.\"\n• Fill in all the prepared information from Step 1 into the form.\n• Double-check everything and tap \"Submit.\"",
+    "ownerGuideStep3Title": "Step 3: Await Approval",
+    "ownerGuideStep3Content": "• After you submit the information, our team will proceed with verification.\n• This process may take 1-3 business days.\n• Once approved, your charging station will officially appear on the map for thousands of EV users to see.\n\nThank you for your contribution!",
+    
+    "reportSheetTitle": "Report an Issue",
+    "reportSheetReasonLabel": "Reason for reporting*",
+    "reportSheetReasonValidator": "Please select a reason",
+    "reportSheetDetailsLabel": "Issue details (optional)",
+    "reportSheetDetailsHint": "Describe more...",
+    "reportSheetPhoneLabel": "Phone number (optional)",
+    "reportSheetSubmitButton": "Send Report",
+    "reportReasonStationNotWorking": "Station not working/No power",
+    "reportReasonConnectorBroken": "Connector broken/Not charging",
+    "reportReasonInfoIncorrect": "Information in app is incorrect",
+    "reportReasonLocationIncorrect": "Location on map is incorrect",
+    "reportReasonPaymentIssue": "Payment issue",
+    "reportReasonOther": "Other reason (please describe in details)",
+
+    "reviewsTitle": "Reviews & Comments",
+    "reviewsImagesTitle": "Images",
+    "reviewsYourReviewTitle": "Your Review:",
+    "reviewsNewCommentHint": "Write your comment...",
+    "reviewsEditCommentHint": "Edit your comment...",
+    "reviewsSubmitButton": "Submit Review",
+    "reviewsUpdateButton": "Update",
+    "reviewsDeleteButton": "Delete",
+    "reviewsDeleteDialogTitle": "Delete review?",
+    "reviewsDeleteDialogContent": "Are you sure you want to delete this review?",
+    "reviewsDialogCancel": "Cancel",
+    "reviewsDialogDelete": "Delete",
+    "reviewsRatingValidator": "Please select a rating.",
+    "reviewsNoOtherReviews": "No other reviews yet.",
+    "reviewsLoadError": "Error loading reviews: {error}",
+    "@reviewsLoadError": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "unknownError": "An unknown error occurred",
+    "yourLocation": "Your location",
+    "chooseOnMap": "Choose on map",
+    "chooseStartPoint": "Choose start point",
+    "chooseDestination": "Choose destination",
+    "swapTooltip": "Swap",
+
+    "reportSendSuccess": "Thank you for your report!",
+
+    "userGuideWelcome": "Welcome to Smart Charger!",
+    "userGuideIntro": "The app helps you easily find and navigate to electric vehicle charging stations nationwide. Here is a guide to the main features:",
+    "userGuideSection1Title": "1. Search and Explore",
+    "userGuideSection1Content": "• Use the search bar at the top to quickly move the map to a specific address or city.\n• Pan and zoom the map to discover charging stations around you. Stations will be automatically loaded and displayed.",
+    "userGuideSection2Title": "2. Find Routes and View Details",
+    "userGuideSection2Content": "• Tap the \"Directions\" button (arrow icon) next to the search bar to open the route planning interface.\n• Choose your start and end points by: using your current location, selecting on the map, or searching for an address.\n• After the route is drawn, tap the \"Find Stations on Route\" button to filter and display only the charging stations along your route.",
+    "userGuideSection3Title": "3. View Station Information",
+    "userGuideSection3Content": "• Tap a charging station icon on the map to open the detailed information panel.\n• The panel will display full details: address, number of connectors, power, operating hours, and pricing information.",
+    "userGuideSection4Title": "4. Navigate to the Station",
+    "userGuideSection4Content": "• In the detailed information panel, tap the \"Directions\" button. The app will automatically open Google Maps to start navigating you.",
+    "userGuideSection5Title": "5. Report an Issue",
+    "userGuideSection5Content": "• If the station information is incorrect or you encounter a problem while charging, please tap \"Report an Issue\" in the detailed information panel to help us improve the data."
 }

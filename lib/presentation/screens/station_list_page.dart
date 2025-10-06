@@ -8,6 +8,7 @@ import 'package:smart_charger_app/domain/entities/filter_params.dart';
 import 'package:smart_charger_app/domain/repositories/i_geocoding_repository.dart';
 import 'package:smart_charger_app/presentation/bloc/nearby_stations_bloc.dart';
 import 'package:smart_charger_app/presentation/screens/filter_page.dart';
+import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/widgets/station_list_item.dart';
 
 class StationListPage extends StatefulWidget  {
@@ -65,10 +66,10 @@ class _StationListPageState extends State<StationListPage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (state.status == NearbyStationsStatus.failure) {
-            return Center(child: Text('Lỗi: ${state.error}'));
+            return Center(child: Text(AppLocalizations.of(context)!.stationListError(state.error ?? AppLocalizations.of(context)!.unknownError)));
           }
           if (state.stations.isEmpty) {
-            return const Center(child: Text('Không tìm thấy trạm sạc nào.'));
+            return Center(child: Text(AppLocalizations.of(context)!.stationListEmpty));
           }
 
           return RefreshIndicator(
@@ -123,7 +124,7 @@ class _StationListPageState extends State<StationListPage> {
           focusNode: focusNode,
           autofocus: true,
           decoration: InputDecoration(
-            hintText: 'Tìm kiếm theo địa điểm...',
+            hintText: AppLocalizations.of(context)!.stationListPageSearchHint,
             prefixIcon: const Icon(Icons.search),
             border: InputBorder.none,
             filled: true,

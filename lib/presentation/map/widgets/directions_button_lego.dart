@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DirectionsButtonLego extends StatelessWidget {
@@ -24,7 +25,7 @@ class DirectionsButtonLego extends StatelessWidget {
       // Nếu có lỗi, hiển thị một thông báo thân thiện cho người dùng.
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không thể mở ứng dụng Google Maps.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.cannotOpenMaps)),
         );
       }
     }
@@ -47,7 +48,7 @@ class DirectionsButtonLego extends StatelessWidget {
           borderRadius: BorderRadius.circular(4.0), // Bo tròn nhẹ giống OutlinedButton
         ),
       ),
-      child: const Text('Dẫn đường'),
+      child: Text(AppLocalizations.of(context)!.directionsButton),
     );
   }
 }

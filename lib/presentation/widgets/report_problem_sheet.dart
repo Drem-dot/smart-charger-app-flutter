@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/station_entity.dart';
+import '../../l10n/app_localizations.dart';
 import '../../presentation/bloc/station_selection_bloc.dart'; // Import BLoC
 
 class ReportProblemSheet extends StatefulWidget {
@@ -12,14 +13,20 @@ class ReportProblemSheet extends StatefulWidget {
 }
 
 class _ReportProblemSheetState extends State<ReportProblemSheet> {
-  final List<String> _reportReasons = [
-    'Trạm không hoạt động/Mất điện',
-    'Cổng sạc bị hỏng/Không nhận sạc',
-    'Thông tin trên ứng dụng bị sai',
-    'Vị trí trên bản đồ không chính xác',
-    'Vấn đề về thanh toán',
-    'Lý do khác (vui lòng mô tả chi tiết)',
-  ];
+  late final List<String> _reportReasons;
+
+  @override
+  void initState() {
+    super.initState();
+    _reportReasons = [
+      AppLocalizations.of(context)!.reportReasonStationNotWorking,
+      AppLocalizations.of(context)!.reportReasonConnectorBroken,
+      AppLocalizations.of(context)!.reportReasonInfoIncorrect,
+      AppLocalizations.of(context)!.reportReasonLocationIncorrect,
+      AppLocalizations.of(context)!.reportReasonPaymentIssue,
+      AppLocalizations.of(context)!.reportReasonOther,
+    ];
+  }
 
   String? _selectedReason;
   final _phoneController = TextEditingController();
@@ -61,7 +68,7 @@ class _ReportProblemSheetState extends State<ReportProblemSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Báo cáo vấn đề', style: Theme.of(context).textTheme.headlineSmall),
+            Text(AppLocalizations.of(context)!.reportSheetTitle, style: Theme.of(context).textTheme.headlineSmall),
             Text(
               widget.station.name,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
@@ -72,16 +79,16 @@ class _ReportProblemSheetState extends State<ReportProblemSheet> {
 
             DropdownButtonFormField<String>(
               value: _selectedReason,
-              decoration: const InputDecoration(labelText: 'Lý do báo cáo*', border: OutlineInputBorder()),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.reportSheetReasonLabel, border: const OutlineInputBorder()),
               items: _reportReasons.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
               onChanged: (value) => setState(() => _selectedReason = value),
-              validator: (v) => v == null ? 'Vui lòng chọn một lý do' : null,
+              validator: (v) => v == null ? AppLocalizations.of(context)!.reportSheetReasonValidator : null,
             ),
             const SizedBox(height: 16),
 
             TextFormField(
               controller: _detailsController,
-              decoration: const InputDecoration(labelText: 'Chi tiết vấn đề (tùy chọn)', hintText: 'Mô tả thêm...', border: OutlineInputBorder()),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.reportSheetDetailsLabel, hintText: AppLocalizations.of(context)!.reportSheetDetailsHint, border: const OutlineInputBorder()),
               maxLines: 4,
               textCapitalization: TextCapitalization.sentences,
             ),
@@ -89,7 +96,7 @@ class _ReportProblemSheetState extends State<ReportProblemSheet> {
 
             TextFormField(
               controller: _phoneController,
-              decoration: const InputDecoration(labelText: 'Số điện thoại (tùy chọn)', border: OutlineInputBorder()),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.reportSheetPhoneLabel, border: const OutlineInputBorder()),
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 24),
@@ -99,7 +106,7 @@ class _ReportProblemSheetState extends State<ReportProblemSheet> {
               child: ElevatedButton.icon(
                 onPressed: _submitReport,
                 icon: const Icon(Icons.send),
-                label: const Text('Gửi báo cáo'),
+                label: Text(AppLocalizations.of(context)!.reportSheetSubmitButton),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

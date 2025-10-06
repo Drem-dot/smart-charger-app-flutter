@@ -5,9 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <application
-        android:label="smart_charger_app"
-        android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+    android:label="@string/app_name" 
+    android:name="${applicationName}"
+    android:icon="@mipmap/ic_launcher">
         
         <activity
             android:name=".MainActivity"

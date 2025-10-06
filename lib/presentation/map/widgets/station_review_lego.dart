@@ -5,6 +5,7 @@ import 'package:smart_charger_app/domain/entities/review_entity.dart';
 import 'package:smart_charger_app/domain/entities/station_entity.dart';
 import 'package:smart_charger_app/domain/repositories/i_review_repository.dart';
 import 'package:smart_charger_app/domain/services/anonymous_identity_service.dart';
+import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/bloc/review_bloc.dart';
 
 /// Lego chính, chịu trách nhiệm cung cấp ReviewBloc và điều phối
@@ -28,7 +29,7 @@ class StationReviewLego extends StatelessWidget {
           StationImages(imageUrls: station.imageUrls),
           const Divider(height: 32),
           Text(
-            'Đánh giá & Bình luận',
+            AppLocalizations.of(context)!.reviewsTitle,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
@@ -89,7 +90,7 @@ class _NewReviewFormState extends State<_NewReviewForm> {
     if (_selectedRating == 0) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Vui lòng chọn số sao.')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.reviewsRatingValidator)));
       return;
     }
     context.read<ReviewBloc>().add(
@@ -127,8 +128,8 @@ class _NewReviewFormState extends State<_NewReviewForm> {
             const SizedBox(height: 8),
             TextFormField(
               controller: _commentController,
-              decoration: const InputDecoration(
-                hintText: 'Viết bình luận của bạn...',
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.reviewsNewCommentHint,
               ),
               maxLines: 1,
               readOnly: isSubmitting,
@@ -144,7 +145,7 @@ class _NewReviewFormState extends State<_NewReviewForm> {
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Gửi đánh giá'),
+                    : Text(AppLocalizations.of(context)!.reviewsSubmitButton),
               ),
             ),
           ],
@@ -185,19 +186,19 @@ class __EditReviewFormState extends State<_EditReviewForm> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Xóa đánh giá?'),
-        content: const Text('Bạn có chắc chắn muốn xóa đánh giá này không?'),
+        title: Text(AppLocalizations.of(context)!.reviewsDeleteDialogTitle),
+        content: Text(AppLocalizations.of(context)!.reviewsDeleteDialogContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Hủy'),
+            child: Text(AppLocalizations.of(context)!.reviewsDialogCancel),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
               context.read<ReviewBloc>().add(ReviewDeleted());
             },
-            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.of(context)!.reviewsDialogDelete, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -214,7 +215,7 @@ class __EditReviewFormState extends State<_EditReviewForm> {
           children: [
 
             Text(
-              'Đánh giá của bạn:',
+              AppLocalizations.of(context)!.reviewsYourReviewTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -235,8 +236,8 @@ class __EditReviewFormState extends State<_EditReviewForm> {
             const SizedBox(height: 8),
             TextFormField(
               controller: _commentController,
-              decoration: const InputDecoration(
-                hintText: 'Sửa bình luận của bạn...',
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.reviewsEditCommentHint,
               ),
               maxLines: 3,
               readOnly: isSubmitting,
@@ -247,14 +248,14 @@ class __EditReviewFormState extends State<_EditReviewForm> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: isSubmitting ? null : _deleteReview,
-                    child: const Text('Xóa'),
+                    child: Text(AppLocalizations.of(context)!.reviewsDeleteButton),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: isSubmitting ? null : _updateReview,
-                    child: const Text('Cập nhật'),
+                    child: Text(AppLocalizations.of(context)!.reviewsUpdateButton),
                   ),
                 ),
               ],
@@ -281,7 +282,7 @@ class StationImages extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Hình ảnh', style: Theme.of(context).textTheme.titleMedium),
+        Text(AppLocalizations.of(context)!.reviewsImagesTitle, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         SizedBox(
           height: 100, // Chiều cao của hàng ảnh
@@ -352,10 +353,10 @@ class _ReviewList extends StatelessWidget {
         if (state is ReviewLoadSuccess) {
           final otherReviews = state.reviews.where((r) => !r.isMine).toList();
           if (otherReviews.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
-                child: Text('Chưa có đánh giá nào khác.'),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(AppLocalizations.of(context)!.reviewsNoOtherReviews),
               ),
             );
           }
@@ -377,7 +378,7 @@ class _ReviewList extends StatelessWidget {
           );
         }
         if (state is ReviewLoadFailure) {
-          return Center(child: Text('Lỗi tải đánh giá: ${state.error}'));
+          return Center(child: Text(AppLocalizations.of(context)!.reviewsLoadError(state.error)));
         }
         return const SizedBox.shrink();
       },

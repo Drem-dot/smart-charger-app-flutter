@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../domain/entities/geocoding_result_entity.dart';
 import '../../../domain/repositories/i_geocoding_repository.dart';
 import '../../bloc/point_selection_bloc.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../bloc/route_bloc.dart';
 
 class SpecialSuggestion extends Object {
@@ -61,13 +62,13 @@ class _DirectionsLegoState extends State<DirectionsLego> {
     // Tạo danh sách các gợi ý đặc biệt
     final List<SpecialSuggestion> specialSuggestions = [
       SpecialSuggestion(
-        title: 'Vị trí của bạn',
+        title: AppLocalizations.of(context)!.yourLocation,
         icon: Icons.my_location,
         onSelect: () {
           final position = widget.currentUserPosition;
           if (position != null) {
             final latLng = LatLng(position.latitude, position.longitude);
-            final name = 'Vị trí của bạn';
+            final name = AppLocalizations.of(context)!.yourLocation;
             final event = pointType == PointType.origin
                 ? OriginUpdated(position: latLng, name: name)
                 : DestinationUpdated(position: latLng, name: name);
@@ -76,7 +77,7 @@ class _DirectionsLegoState extends State<DirectionsLego> {
         },
       ),
       SpecialSuggestion(
-        title: 'Chọn trên bản đồ',
+        title: AppLocalizations.of(context)!.chooseOnMap,
         icon: Icons.map_outlined,
         onSelect: () {
           pointSelectionBloc.add(SelectionStarted(pointType));
@@ -184,14 +185,14 @@ class _DirectionsLegoState extends State<DirectionsLego> {
                   children: [
                     _buildPointInputField(
                       controller: _originController,
-                      hintText: 'Chọn điểm bắt đầu',
+                      hintText: AppLocalizations.of(context)!.chooseStartPoint,
                       pointType: PointType.origin,
                       currentName: state.originName,
                     ),
                     const Divider(height: 1, thickness: 1),
                     _buildPointInputField(
                       controller: _destinationController,
-                      hintText: 'Chọn điểm kết thúc',
+                      hintText: AppLocalizations.of(context)!.chooseDestination,
                       pointType: PointType.destination,
                       currentName: state.destinationName,
                     ),
@@ -202,7 +203,7 @@ class _DirectionsLegoState extends State<DirectionsLego> {
               // --- Nút đảo ngược vị trí ---
               IconButton(
                 icon: const Icon(Icons.swap_vert),
-                tooltip: 'Đảo ngược',
+                tooltip: AppLocalizations.of(context)!.swapTooltip,
                 onPressed: () => context.read<RouteBloc>().add(RoutePointsSwapped()),
               ),
             ],

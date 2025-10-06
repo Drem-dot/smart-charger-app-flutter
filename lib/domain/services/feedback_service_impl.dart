@@ -41,16 +41,16 @@ class FeedbackServiceImpl implements IFeedbackService {
 
       // (Tùy chọn) Kiểm tra xem server có trả về mã thành công không
       if (response.statusCode != 200) {
-        throw Exception('Server đã phản hồi với lỗi: ${response.statusCode}');
+        throw Exception('Server responded with an error: ${response.statusCode}');
       }
-      // Nếu không có lỗi, quá trình gửi đã thành công.
+      // If no error, the submission was successful.
 
     } on DioException {
-      // Xử lý các lỗi liên quan đến mạng (không có kết nối, timeout...)
-      throw Exception('Không thể gửi báo cáo. Vui lòng kiểm tra kết nối mạng và thử lại.');
+      // Handle network-related errors (no connection, timeout...)
+      throw Exception('Could not send report. Please check your network connection and try again.');
     } catch (e) {
-      // Bắt các lỗi không mong muốn khác
-      throw Exception('Đã có lỗi không mong muốn xảy ra. Vui lòng thử lại sau.');
+      // Catch other unexpected errors
+      throw Exception('An unexpected error occurred. Please try again later.');
     }
   }
 }

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:smart_charger_app/domain/entities/station_entity.dart';
+import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/map/widgets/directions_button_lego.dart';
 
 class StationCarouselCard extends StatelessWidget {
@@ -45,7 +46,7 @@ class StationCarouselCard extends StatelessWidget {
                             // Hiển thị khoảng cách nếu có
                             if (station.distanceInKm != null)
                               Text(
-                                '${station.distanceInKm!.toStringAsFixed(1)} km',
+                                AppLocalizations.of(context)!.stationCardDistance(station.distanceInKm!.toStringAsFixed(1)),
                                 style: theme.textTheme.bodySmall?.copyWith(fontSize: 11),
                               ),
                             

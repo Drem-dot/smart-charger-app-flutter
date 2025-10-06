@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:smart_charger_app/domain/entities/station_entity.dart';
 import 'package:smart_charger_app/presentation/bloc/station_selection_bloc.dart';
 import 'package:smart_charger_app/presentation/map/widgets/directions_button_lego.dart';
+import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/map/widgets/station_review_lego.dart';
 
 class StationDetailsSheetContent extends StatelessWidget {
@@ -123,7 +124,7 @@ class _SheetCollapsedContent extends StatelessWidget {
                 child: _buildInfoRow(
                   context,
                   Icons.electric_bolt,
-                  'Trạng thái',
+                  AppLocalizations.of(context)!.sheetStatusLabel,
                   station.status.toUpperCase(),
                   valueColor: station.status.toLowerCase() == 'available'
                       ? Colors.green
@@ -132,7 +133,7 @@ class _SheetCollapsedContent extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.report_problem_outlined),
-                tooltip: 'Báo cáo vấn đề',
+                tooltip: AppLocalizations.of(context)!.sheetReportProblemTooltip,
                 onPressed: () => context.read<StationSelectionBloc>().add(
                   StationReportInitiated(),
                 ),
@@ -143,14 +144,14 @@ class _SheetCollapsedContent extends StatelessWidget {
           _buildInfoRow(
             context,
             Icons.access_time_filled,
-            'Giờ hoạt động',
-            station.operatingHours ?? 'Chưa có thông tin',
+            AppLocalizations.of(context)!.sheetOperatingHoursLabel,
+            station.operatingHours ?? AppLocalizations.of(context)!.noInfo,
           ),
           _buildInfoRow(
             context,
             Icons.local_parking,
-            'Chi tiết đỗ xe',
-            station.pricingDetails ?? 'Chưa có thông tin',
+            AppLocalizations.of(context)!.sheetParkingDetailsLabel,
+            station.pricingDetails ?? AppLocalizations.of(context)!.noInfo,
           ),
 
           const SizedBox(height: 24),
@@ -191,11 +192,11 @@ class _SheetCollapsedContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (isLowPowerOnly) ...[
-                const Text('Số lượng cổng sạc:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context)!.sheetConnectorTotalTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text('$totalConnectors cổng'),
+                Text(AppLocalizations.of(context)!.sheetConnectorInfo(totalConnectors.toString())),
               ] else ...[
-                const Text('Chi tiết cổng sạc:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context)!.sheetConnectorDetailsTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 
                 // --- SỬA LỖI LOGIC Ở ĐÂY ---
@@ -205,11 +206,11 @@ class _SheetCollapsedContent extends StatelessWidget {
                       .where((power) => power > 0)
                       .toList()
                       ..sort((a, b) => b.compareTo(a));
-
+ 
                   // 2. Map (Biến đổi) thành các Widget Text
                   return sortedPowerLevels.map((power) {
                     final count = connectors[power.toString()];
-                    return Text('$count cổng ${power}kW');
+                    return Text(AppLocalizations.of(context)!.sheetConnectorPowerInfo(count.toString(), power.toString()));
                   }).toList(); // Chuyển kết quả map thành một List<Widget>
                 }(), // Gọi hàm ẩn danh ngay lập tức
               ],

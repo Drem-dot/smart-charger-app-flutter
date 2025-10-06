@@ -1,6 +1,167 @@
 {
-  "@@locale": "vi",
   "appName": "Sạc Thông Minh",
-  "mapAppBarTitle": "Trạm sạc toàn quốc"
-  
+
+"navMap": "Bản đồ",
+"navStationList": "Danh sách",
+"navAddStation": "Thêm",
+"navSettings": "Cài đặt",
+
+"searchPlaceholder": "Tìm kiếm địa điểm...",
+"directionsTooltip": "Tìm đường",
+"directionsTitle": "Tìm đường",
+"directionsButton": "Dẫn đường",
+"cannotOpenMaps": "Không thể mở ứng dụng Google Maps.",
+
+"stationCardDistance": "{distance} km",
+"@stationCardDistance": {
+    "description": "Hiển thị khoảng cách đến trạm sạc",
+    "placeholders": {
+        "distance": {
+            "type": "String"
+        }
+    }
+},
+
+"sheetStationName": "Tên trạm",
+"sheetAddress": "Địa chỉ",
+"sheetStatusLabel": "Trạng thái",
+"sheetConnectorsLabel": "Cổng sạc",
+"sheetOperatingHoursLabel": "Giờ hoạt động",
+"sheetParkingDetailsLabel": "Chi tiết đỗ xe",
+"sheetReportProblemTooltip": "Báo cáo vấn đề",
+"sheetConnectorDetailsTitle": "Chi tiết cổng sạc:",
+"sheetConnectorTotalTitle": "Số lượng cổng sạc:",
+"sheetConnectorInfo": "{count} cổng",
+"@sheetConnectorInfo": {
+    "placeholders": {
+        "count": {
+            "type": "String"
+        }
+    }
+},
+"sheetConnectorPowerInfo": "{count} cổng {power}kW",
+"@sheetConnectorPowerInfo": {
+    "placeholders": {
+        "count": {
+            "type": "String"
+        },
+        "power": {
+            "type": "String"
+        }
+    }
+},
+"noInfo": "Chưa có thông tin",
+
+"addStationScreenTitle": "Thêm Trạm Sạc Mới",
+"addStationMapLocation": "Vị trí trên bản đồ *",
+"addStationMapHint": "Nhấn để đặt ghim hoặc kéo ghim để chọn vị trí chính xác.",
+"addStationNameLabel": "Tên trạm sạc *",
+"addStationNameValidator": "Vui lòng nhập tên",
+"addStationAddressLabel": "Địa chỉ *",
+"addStationAddressHint": "Bắt đầu nhập để tìm kiếm...",
+"addStationAddressValidator": "Vui lòng nhập địa chỉ",
+"addStationNoAddressFound": "Không tìm thấy địa điểm nào.",
+"addStationConnectorType": "Loại cổng sạc",
+"addStationPower": "Công suất (kW)",
+"addStationOperatingHoursHint": "Giờ hoạt động (ví dụ: 24/7)",
+"addStationPricingDetailsHint": "Chi tiết giá",
+"addStationNetworkOperatorHint": "Nhà cung cấp mạng lưới",
+"addStationAdminInfo": "Thông tin cho Quản trị viên",
+"addStationOwnerNameLabel": "Tên chủ trạm *",
+"addStationOwnerNameValidator": "Vui lòng nhập tên chủ trạm",
+"addStationOwnerPhoneLabel": "Số điện thoại chủ trạm *",
+"addStationOwnerPhoneValidator": "Vui lòng nhập số điện thoại",
+"addStationImages": "Hình ảnh trạm sạc (tùy chọn)",
+"addStationSubmitButton": "Gửi thông tin",
+"addStationSuccessMessage": "\"{stationName}\" đã được thêm và đang chờ duyệt.",
+"@addStationSuccessMessage": {
+    "placeholders": {
+        "stationName": {
+            "type": "String"
+        }
+    }
+},
+"addStationMapPinValidator": "Vui lòng chọn một vị trí trên bản đồ.",
+"addStationMaxImages": "Bạn chỉ có thể chọn tối đa 4 ảnh.",
+
+"stationListPageTitle": "Danh sách trạm sạc",
+"stationListPageSearchHint": "Tìm kiếm theo địa điểm...",
+"stationListError": "Lỗi: {error}",
+"@stationListError": {
+    "placeholders": {
+        "error": {
+            "type": "String"
+        }
+    }
+},
+"stationListEmpty": "Không tìm thấy trạm sạc nào.",
+
+"settingsPageTitle": "Cài đặt & Thông tin",
+"settingsPartnership": "Giới thiệu hợp tác",
+"settingsUserGuide": "Hướng dẫn sử dụng",
+"settingsOwnerGuide": "Hướng dẫn chủ trạm sạc",
+"settingsShareApp": "Chia sẻ ứng dụng",
+"settingsShareAppMessage": "Hãy thử Sạc Thông Minh!",
+"ownerGuideTitle": "Đưa Trạm Sạc Của Bạn Lên Bản Đồ",
+"ownerGuideIntro": "Cảm ơn bạn đã quan tâm đến việc đóng góp cho mạng lưới Sạc Thông Minh. Việc đưa trạm sạc của bạn lên hệ thống của chúng tôi hoàn toàn miễn phí và chỉ mất vài phút.",
+"ownerGuideStep1Title": "Bước 1: Chuẩn bị thông tin",
+"ownerGuideStep1Content": "Để quá trình thêm trạm diễn ra thuận lợi, vui lòng chuẩn bị sẵn các thông tin sau:\n• Tên chính xác của trạm sạc.\n• Địa chỉ chi tiết.\n• Vị trí chính xác trên bản đồ (bạn sẽ chọn bằng cách thả ghim).\n• Số lượng và loại cổng sạc (ví dụ: CCS2, Type 2...).\n• Công suất của từng loại cổng (ví dụ: 60kW, 120kW...).\n• Giờ hoạt động (ví dụ: 24/7, 8h - 22h).\n• Chi tiết giá hoặc phí đỗ xe (nếu có).",
+"ownerGuideStep2Title": "Bước 2: Sử dụng tính năng \"Thêm trạm\"",
+"ownerGuideStep2Content": "• Từ màn hình bản đồ chính, nhấn vào nút \"Thêm trạm\" (biểu tượng dấu cộng).\n• Một bản đồ nhỏ sẽ hiện ra, hãy di chuyển và nhấn giữ để \"thả ghim\" vào đúng vị trí trạm của bạn, sau đó nhấn \"Xác nhận\".\n• Điền tất cả thông tin đã chuẩn bị ở Bước 1 vào biểu mẫu.\n• Kiểm tra lại mọi thứ và nhấn \"Gửi đi\".",
+"ownerGuideStep3Title": "Bước 3: Chờ duyệt",
+"ownerGuideStep3Content": "• Sau khi bạn gửi thông tin, đội ngũ của chúng tôi sẽ tiến hành xác minh.\n• Quá trình này có thể mất từ 1-3 ngày làm việc.\n• Khi được duyệt, trạm sạc của bạn sẽ chính thức xuất hiện trên bản đồ để hàng ngàn người dùng xe điện có thể thấy.\n\nCảm ơn sự đóng góp của bạn!",
+"reportSheetTitle": "Báo cáo vấn đề",
+"reportSheetReasonLabel": "Lý do báo cáo*",
+"reportSheetReasonValidator": "Vui lòng chọn một lý do",
+"reportSheetDetailsLabel": "Chi tiết vấn đề (tùy chọn)",
+"reportSheetDetailsHint": "Mô tả thêm...",
+"reportSheetPhoneLabel": "Số điện thoại (tùy chọn)",
+"reportSheetSubmitButton": "Gửi báo cáo",
+"reportReasonStationNotWorking": "Trạm không hoạt động/Mất điện",
+"reportReasonConnectorBroken": "Cổng sạc bị hỏng/Không nhận sạc",
+"reportReasonInfoIncorrect": "Thông tin trên ứng dụng bị sai",
+"reportReasonLocationIncorrect": "Vị trí trên bản đồ không chính xác",
+"reportReasonPaymentIssue": "Vấn đề về thanh toán",
+"reportReasonOther": "Lý do khác (vui lòng mô tả chi tiết)",
+"reviewsTitle": "Đánh giá & Bình luận",
+"reviewsImagesTitle": "Hình ảnh",
+"reviewsYourReviewTitle": "Đánh giá của bạn:",
+"reviewsNewCommentHint": "Viết bình luận của bạn...",
+"reviewsEditCommentHint": "Sửa bình luận của bạn...",
+"reviewsSubmitButton": "Gửi đánh giá",
+"reviewsUpdateButton": "Cập nhật",
+"reviewsDeleteButton": "Xóa",
+"reviewsDeleteDialogTitle": "Xóa đánh giá?",
+"reviewsDeleteDialogContent": "Bạn có chắc chắn muốn xóa đánh giá này không?",
+"reviewsDialogCancel": "Hủy",
+"reviewsDialogDelete": "Xóa",
+"reviewsRatingValidator": "Vui lòng chọn số sao.",
+"reviewsNoOtherReviews": "Chưa có đánh giá nào khác.",
+"reviewsLoadError": "Lỗi tải đánh giá: {error}",
+"@reviewsLoadError": {
+    "placeholders": {
+        "error": {
+            "type": "String"
+        }
+    }
+},
+"unknownError": "Đã xảy ra lỗi không xác định",
+"yourLocation": "Vị trí của bạn",
+"chooseOnMap": "Chọn trên bản đồ",
+"chooseStartPoint": "Chọn điểm bắt đầu",
+"chooseDestination": "Chọn điểm kết thúc",
+"swapTooltip": "Đảo ngược",
+"reportSendSuccess": "Cảm ơn bạn đã gửi báo cáo!",
+"userGuideWelcome": "Chào mừng bạn đến với Sạc Thông Minh!",
+"userGuideIntro": "Ứng dụng giúp bạn dễ dàng tìm kiếm và di chuyển đến các trạm sạc xe điện trên toàn quốc. Dưới đây là hướng dẫn các tính năng chính:",
+"userGuideSection1Title": "1. Tìm kiếm và Khám phá",
+"userGuideSection1Content": "• Sử dụng thanh tìm kiếm ở trên cùng để nhanh chóng di chuyển bản đồ đến một địa chỉ hoặc thành phố cụ thể.\n• Lướt và zoom bản đồ để khám phá các trạm sạc xung quanh bạn. Các trạm sẽ tự động được tải và hiển thị.",
+"userGuideSection2Title": "2. Tìm đường và Xem chi tiết",
+"userGuideSection2Content": "• Nhấn vào nút \"Đường đi\" (biểu tượng mũi tên) cạnh thanh tìm kiếm để mở giao diện tìm lộ trình.\n• Chọn điểm bắt đầu và kết thúc bằng cách: dùng vị trí hiện tại, chọn trên bản đồ, hoặc tìm kiếm địa chỉ.\n• Sau khi lộ trình được vẽ, nhấn nút \"Tìm trạm trên đường\" để lọc và chỉ hiển thị các trạm sạc dọc theo tuyến đi của bạn.",
+"userGuideSection3Title": "3. Xem Thông tin Trạm sạc",
+"userGuideSection3Content": "• Nhấn vào một biểu tượng trạm sạc trên bản đồ để mở bảng thông tin chi tiết.\n• Bảng thông tin sẽ hiển thị đầy đủ: địa chỉ, số lượng cổng sạc, công suất, giờ hoạt động, và chi tiết về giá.",
+"userGuideSection4Title": "4. Dẫn đường đến Trạm",
+"userGuideSection4Content": "• Trong bảng thông tin chi tiết, nhấn nút \"Dẫn đường\". Ứng dụng sẽ tự động mở Google Maps để bắt đầu chỉ đường cho bạn.",
+"userGuideSection5Title": "5. Báo cáo Vấn đề",
+"userGuideSection5Content": "• Nếu thông tin trạm sạc không chính xác hoặc gặp vấn đề khi sạc, hãy nhấn vào \"Báo cáo vấn đề\" trong bảng thông tin chi tiết để giúp chúng tôi cải thiện dữ liệu."
 }

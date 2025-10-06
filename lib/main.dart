@@ -106,7 +106,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => SheetDragState()),
         ],
         child: MaterialApp(
-          onGenerateTitle: (context) => "Sạc Thông Minh", // Sửa lại để đơn giản hơn
+          onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
           debugShowCheckedModeBanner: false,
           theme: AppTheme.theme,
           localizationsDelegates: const [

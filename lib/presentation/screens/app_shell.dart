@@ -1,7 +1,8 @@
 // lib/presentation/screens/app_shell.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_charger_app/domain/entities/station_entity.dart'; // <-- THÊM IMPORT
+import 'package:smart_charger_app/domain/entities/station_entity.dart';
+import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/screens/add_station_screen.dart';
 import 'package:smart_charger_app/presentation/screens/map_page.dart';
 import 'package:smart_charger_app/presentation/screens/settings_page.dart';
@@ -26,7 +27,7 @@ class AppShell extends StatelessWidget {
           ..hideCurrentSnackBar() // Ẩn snackbar cũ nếu có
           ..showSnackBar(
             SnackBar(
-              content: Text('"${result.name}" đã được thêm và đang chờ duyệt.'),
+              content: Text(AppLocalizations.of(context)!.addStationSuccessMessage(result.name)),
               backgroundColor: Colors.green,
             ),
           );
@@ -61,11 +62,11 @@ class AppShell extends StatelessWidget {
               type: BottomNavigationBarType.fixed,
               selectedItemColor: Theme.of(context).primaryColor,
               unselectedItemColor: Colors.grey,
-              items: const [
-                BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: 'Bản đồ'),    // index 0
-                BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Danh sách'), // index 1
-                BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: 'Thêm'),     // index 2
-                BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), label: 'Cài đặt'), // index 3
+              items: [
+                BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: AppLocalizations.of(context)!.navMap),    // index 0
+                BottomNavigationBarItem(icon: Icon(Icons.list), label: AppLocalizations.of(context)!.navStationList), // index 1
+                BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline), label: AppLocalizations.of(context)!.navAddStation),     // index 2
+                BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), label: AppLocalizations.of(context)!.navSettings), // index 3
               ],
             ),
           );
