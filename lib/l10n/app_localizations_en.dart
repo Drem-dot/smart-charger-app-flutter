@@ -24,13 +24,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navSettings => 'Settings';
 
   @override
-  String get searchPlaceholder => 'Search for a place...';
+  String get searchPlaceholder => 'Find charging stations by address...';
 
   @override
   String get directionsTooltip => 'Directions';
 
   @override
-  String get directionsTitle => 'Directions';
+  String get directionsTitle => 'Directions ';
 
   @override
   String get directionsButton => 'Directions';
@@ -145,6 +145,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addStationImages => 'Station Images (optional)';
 
   @override
+  String get addStationTypeTitle => 'Station Type *';
+
+  @override
+  String get stationTypeCar => 'Car';
+
+  @override
+  String get stationTypeBike => 'Motorbike';
+
+  @override
   String get addStationSubmitButton => 'Submit';
 
   @override
@@ -189,7 +198,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsShareApp => 'Share App';
 
   @override
-  String get settingsShareAppMessage => 'Check out Smart Charger!';
+  String get settingsShareAppMessage =>
+      'This is a nationwide charging station search app with full data. Visit the link https://sacthongminh.com to look up stations or install the Smart Charging app';
 
   @override
   String get ownerGuideTitle => 'List Your Charging Station on the Map';

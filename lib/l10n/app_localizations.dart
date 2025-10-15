@@ -131,7 +131,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchPlaceholder.
   ///
   /// In en, this message translates to:
-  /// **'Search for a place...'**
+  /// **'Find charging stations by address...'**
   String get searchPlaceholder;
 
   /// No description provided for @directionsTooltip.
@@ -143,7 +143,7 @@ abstract class AppLocalizations {
   /// No description provided for @directionsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Directions'**
+  /// **'Directions '**
   String get directionsTitle;
 
   /// No description provided for @directionsButton.
@@ -356,6 +356,24 @@ abstract class AppLocalizations {
   /// **'Station Images (optional)'**
   String get addStationImages;
 
+  /// No description provided for @addStationTypeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Station Type *'**
+  String get addStationTypeTitle;
+
+  /// No description provided for @stationTypeCar.
+  ///
+  /// In en, this message translates to:
+  /// **'Car'**
+  String get stationTypeCar;
+
+  /// No description provided for @stationTypeBike.
+  ///
+  /// In en, this message translates to:
+  /// **'Motorbike'**
+  String get stationTypeBike;
+
   /// No description provided for @addStationSubmitButton.
   ///
   /// In en, this message translates to:
@@ -437,7 +455,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsShareAppMessage.
   ///
   /// In en, this message translates to:
-  /// **'Check out Smart Charger!'**
+  /// **'This is a nationwide charging station search app with full data. Visit the link https://sacthongminh.com to look up stations or install the Smart Charging app'**
   String get settingsShareAppMessage;
 
   /// No description provided for @ownerGuideTitle.

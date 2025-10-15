@@ -7,6 +7,8 @@ abstract class IGeocodingRepository {
   Future<List<GeocodingResult>> search(String query);
   
   // --- THÊM MỚI ---
-  Future<List<AutocompletePrediction>> getAutocompleteSuggestions(String query);
-  Future<LatLng?> getLatLngFromPlaceId(String placeId);
+  Future<List<AutocompletePrediction>> getAutocompleteSuggestions(String query, {required String sessionToken});
+  Future<LatLng?> getLatLngFromPlaceId(String placeId , {required String sessionToken});
+  Future<String?> getAddressFromLatLng(LatLng position);
+
 }

@@ -2,28 +2,36 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:smart_charger_app/domain/entities/station_entity.dart';
-import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/map/widgets/directions_button_lego.dart';
+import 'package:smart_charger_app/presentation/utils/formatters.dart';
 
 class StationCarouselCard extends StatelessWidget {
   final StationEntity station;
   final VoidCallback onTap;
   final Position? currentUserPosition;
+  final bool isRouteMode;
 
   const StationCarouselCard({
     super.key,
     required this.station,
     required this.onTap,
     this.currentUserPosition,
+    this.isRouteMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final cardColor = isRouteMode 
+        ? Colors.blue[50] // Màu xanh nhạt cho chế độ tìm đường
+        : theme.cardColor; // Màu mặc định
+
+
     return GestureDetector(
       onTap: onTap,
       child: Card(
+        color: cardColor,
         margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
         clipBehavior: Clip.antiAlias,
         child: Container(
@@ -41,19 +49,32 @@ class StationCarouselCard extends StatelessWidget {
                         // --- HÀNG TRÊN CÙNG - SỬ DỤNG DỮ LIỆU THẬT ---
                         Row(
                           children: [
-                            Icon(Icons.ev_station, color: theme.primaryColor, size: 18),
+                            Icon(
+                              Icons.ev_station,
+                              color: theme.primaryColor,
+                              size: 18,
+                            ),
                             const SizedBox(width: 6),
                             // Hiển thị khoảng cách nếu có
                             if (station.distanceInKm != null)
                               Text(
-                                AppLocalizations.of(context)!.stationCardDistance(station.distanceInKm!.toStringAsFixed(1)),
-                                style: theme.textTheme.bodySmall?.copyWith(fontSize: 11),
+                                // Sử dụng hàm helper
+                                formatDistance(station.distanceInKm!),
+                                // Style mới: chữ to và đậm hơn
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14, // Tăng font size
+                                ),
                               ),
-                            
+
                             const Spacer(),
                             Row(
                               children: [
-                                const Icon(Icons.star, color: Colors.amber, size: 14),
+                                const Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: 14,
+                                ),
                                 const SizedBox(width: 2),
                                 Text(
                                   '${station.ratingsAverage.toStringAsFixed(1)} (${station.ratingsQuantity})',
@@ -67,7 +88,7 @@ class StationCarouselCard extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        
+
                         // --- TÊN VÀ ĐỊA CHỈ ---
                         Expanded(
                           child: Column(
@@ -87,7 +108,9 @@ class StationCarouselCard extends StatelessWidget {
                               Flexible(
                                 child: Text(
                                   station.address,
-                                  style: theme.textTheme.bodySmall?.copyWith(fontSize: 11),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    fontSize: 11,
+                                  ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -100,9 +123,13 @@ class StationCarouselCard extends StatelessWidget {
 
                         // --- HÀNG DƯỚI CÙNG ---
                         SizedBox(
-                          width: double.infinity, // Đảm bảo nút chiếm toàn bộ chiều rộng
-                          child: DirectionsButtonLego(destination: station.position),
-                        ),],
+                          width: double
+                              .infinity, // Đảm bảo nút chiếm toàn bộ chiều rộng
+                          child: DirectionsButtonLego(
+                            destination: station.position,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

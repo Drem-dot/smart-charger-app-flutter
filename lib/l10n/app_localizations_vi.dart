@@ -24,13 +24,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get navSettings => 'Cài đặt';
 
   @override
-  String get searchPlaceholder => 'Tìm kiếm địa điểm...';
+  String get searchPlaceholder => 'Tìm trạm sạc theo địa chỉ...';
 
   @override
   String get directionsTooltip => 'Tìm đường';
 
   @override
-  String get directionsTitle => 'Tìm đường';
+  String get directionsTitle => 'Tìm đường và trạm sạc trên đường';
 
   @override
   String get directionsButton => 'Dẫn đường';
@@ -145,6 +145,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get addStationImages => 'Hình ảnh trạm sạc (tùy chọn)';
 
   @override
+  String get addStationTypeTitle => 'Loại trạm *';
+
+  @override
+  String get stationTypeCar => 'Ô tô';
+
+  @override
+  String get stationTypeBike => 'Xe máy';
+
+  @override
   String get addStationSubmitButton => 'Gửi thông tin';
 
   @override
@@ -189,7 +198,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get settingsShareApp => 'Chia sẻ ứng dụng';
 
   @override
-  String get settingsShareAppMessage => 'Hãy thử Sạc Thông Minh!';
+  String get settingsShareAppMessage =>
+      'Đây là app tìm kiếm trạm sạc toàn quốc, dữ liệu đầy đủ.  Truy cập link https://sacthongminh.com để tra cứu trạm hoặc cài app Sạc Thông Minh';
 
   @override
   String get ownerGuideTitle => 'Đưa Trạm Sạc Của Bạn Lên Bản Đồ';

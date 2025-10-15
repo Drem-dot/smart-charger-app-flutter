@@ -10,17 +10,40 @@ import 'package:smart_charger_app/presentation/bloc/nearby_stations_bloc.dart';
 import 'package:smart_charger_app/presentation/screens/filter_page.dart';
 import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/widgets/station_list_item.dart';
+import 'package:uuid/uuid.dart';
 
 class StationListPage extends StatefulWidget  {
   const StationListPage({super.key});
+  
 
-   @override
+  @override
   State<StationListPage> createState() => _StationListPageState();
 }
 
 class _StationListPageState extends State<StationListPage> {
   // --- THÊM MỚI: Các biến trạng thái được chuyển vào đây ---
   final TextEditingController _searchController = TextEditingController();
+  String? _sessionToken;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+  
+  // Hàm để bắt đầu một phiên mới
+  void _startNewSession() {
+    setState(() {
+      _sessionToken = const Uuid().v4();
+    });
+  }
+
+  // Hàm để kết thúc phiên
+  void _endSession() {
+    setState(() {
+      _sessionToken = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +125,11 @@ class _StationListPageState extends State<StationListPage> {
     return TypeAheadField<AutocompletePrediction>(
       controller: _searchController,
       suggestionsCallback: (query) {
-        return geocodingRepo.getAutocompleteSuggestions(query);
+        // Nếu chưa có session, tạo mới
+        if (_sessionToken == null) {
+          _startNewSession();
+        }
+        return geocodingRepo.getAutocompleteSuggestions(query, sessionToken: _sessionToken!);
       },
       itemBuilder: (context, suggestion) {
         return ListTile(
@@ -111,12 +138,16 @@ class _StationListPageState extends State<StationListPage> {
       },
       onSelected: (suggestion) async {
         _searchController.text = suggestion.description;
-        // Lấy tọa độ từ placeId
-        final latLng = await geocodingRepo.getLatLngFromPlaceId(suggestion.placeId);
+        
+        // Dùng token hiện tại để lấy details
+        final latLng = await geocodingRepo.getLatLngFromPlaceId(suggestion.placeId, sessionToken: _sessionToken!);
+        
         if (latLng != null && mounted) {
-          // Bắn event mới để tìm trạm xung quanh điểm đã chọn
           nearbyStationsBloc.add(FetchStationsAroundPoint(latLng));
         }
+        
+        // Kết thúc phiên sau khi đã chọn
+        _endSession();
       },
       builder: (context, controller, focusNode) {
         return TextField(

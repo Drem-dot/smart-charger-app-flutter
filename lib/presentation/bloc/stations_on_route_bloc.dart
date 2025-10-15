@@ -30,7 +30,7 @@ class StationsOnRouteBloc extends Bloc<StationsOnRouteEvent, StationsOnRouteStat
     
     // Đăng ký lắng nghe stream của RouteBloc ngay khi được tạo
     _routeSubscription = routeBloc.stream.listen((routeState) {
-      if (routeState is RouteSuccess && routeState.route != null) {
+      if (routeState is RouteSuccess) {
         // Nếu có tuyến đường mới, tự động bắn event để tìm trạm
         add(FindStationsForRoute(routeState.route!));
       } else {

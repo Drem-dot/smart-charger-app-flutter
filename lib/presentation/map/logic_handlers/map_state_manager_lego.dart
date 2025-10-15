@@ -39,6 +39,7 @@ class _MapStateManagerLegoState extends State<MapStateManagerLego> {
   // Lắng nghe RouteBloc để cập nhật Polylines và Pins
   void _listenToRouteBloc() {
     _routeBlocSubscription = context.read<RouteBloc>().stream.listen((routeState) {
+      
       // Cập nhật Polylines
       if (routeState is RouteSuccess && routeState.route != null) {
         final newPolyline = Polyline(
@@ -46,9 +47,25 @@ class _MapStateManagerLegoState extends State<MapStateManagerLego> {
           points: routeState.route!.polylinePoints,
           color: Colors.blue,
           width: 5,
-          zIndex: 1, 
+          zIndex: 1, // zIndex là double
         );
         widget.onPolylinesUpdated({newPolyline});
+
+        // --- BỔ SUNG LOGIC ĐIỀU KHIỂN CAMERA ---
+        // Thêm một chút delay để đảm bảo UI đã sẵn sàng
+        if (routeState.bounds != null) {
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (mounted) {
+              try {
+                widget.controller.animateCamera(
+                  CameraUpdate.newLatLngBounds(routeState.bounds!, 60.0), 
+                );
+              } catch (e) {
+                debugPrint("Error animating camera to route bounds: $e");
+              }
+            }
+          });
+        }
       } else {
         widget.onPolylinesUpdated({});
       }

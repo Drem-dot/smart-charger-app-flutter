@@ -7,6 +7,7 @@ import 'package:smart_charger_app/presentation/bloc/map_control_bloc.dart';
 import 'package:smart_charger_app/presentation/bloc/navigation_cubit.dart';
 import 'package:smart_charger_app/presentation/bloc/station_selection_bloc.dart';
 import 'package:smart_charger_app/presentation/map/widgets/directions_button_lego.dart';
+import 'package:smart_charger_app/presentation/utils/formatters.dart';
 
 class StationListItem extends StatelessWidget {
   final StationEntity station;
@@ -18,7 +19,7 @@ class StationListItem extends StatelessWidget {
     required this.currentUserPosition,
   });
 
-   @override
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final bool isAvailable = station.status.toLowerCase() == 'available';
@@ -26,12 +27,15 @@ class StationListItem extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       clipBehavior: Clip.antiAlias, // Giúp hiệu ứng InkWell đẹp hơn
-      child: InkWell( // <-- BỌC BẰNG INKWELL
+      child: InkWell(
+        // <-- BỌC BẰNG INKWELL
         onTap: () {
           // 1. Gửi lệnh focus
           context.read<StationSelectionBloc>().add(StationSelected(station));
           // 2. Gửi lệnh di chuyển camera
-          context.read<MapControlBloc>().add(CameraMoveRequested(station.position, 16.0));
+          context.read<MapControlBloc>().add(
+            CameraMoveRequested(station.position, 16.0),
+          );
           // 3. Quay về tab bản đồ
           context.read<NavigationCubit>().changeTab(BottomNavItem.map.index);
         },
@@ -46,7 +50,15 @@ class StationListItem extends StatelessWidget {
                   Icon(Icons.ev_station, color: theme.primaryColor, size: 20),
                   const SizedBox(width: 8),
                   if (station.distanceInKm != null)
-                    Text('${station.distanceInKm!.toStringAsFixed(1)} km', style: theme.textTheme.bodySmall),
+                    Text(
+                      // Sử dụng hàm helper
+                      formatDistance(station.distanceInKm!),
+                      // Style mới: chữ to và đậm hơn
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14, // Tăng font size
+                      ),
+                    ),
                   const Spacer(),
                   _buildStatusTag(isAvailable),
                   const SizedBox(width: 8),
@@ -56,18 +68,22 @@ class StationListItem extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         '${station.ratingsAverage.toStringAsFixed(1)} (${station.ratingsQuantity})',
-                        style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              
+
               // --- TÊN VÀ ĐỊA CHỈ ---
               Text(
                 station.name,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -82,15 +98,16 @@ class StationListItem extends StatelessWidget {
 
               // --- HÀNG CÁC NÚT BẤM ---
               SizedBox(
-                          width: double.infinity, // Đảm bảo nút chiếm toàn bộ chiều rộng
-                          child: DirectionsButtonLego(destination: station.position),
-                        ),],
+                width: double.infinity, // Đảm bảo nút chiếm toàn bộ chiều rộng
+                child: DirectionsButtonLego(destination: station.position),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
-  
+
   Widget _buildStatusTag(bool isAvailable) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),

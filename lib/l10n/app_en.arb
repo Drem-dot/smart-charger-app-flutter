@@ -8,9 +8,9 @@
     "navAddStation": "Add",
     "navSettings": "Settings",
 
-    "searchPlaceholder": "Search for a place...",
+    "searchPlaceholder": "Find charging stations by address...",
     "directionsTooltip": "Directions",
-    "directionsTitle": "Directions",
+    "directionsTitle": "Directions ",
     "directionsButton": "Directions",
     "cannotOpenMaps": "Could not open Google Maps.",
 
@@ -74,6 +74,9 @@
     "addStationOwnerPhoneLabel": "Owner Phone Number *",
     "addStationOwnerPhoneValidator": "Please enter phone number",
     "addStationImages": "Station Images (optional)",
+    "addStationTypeTitle": "Station Type *",
+    "stationTypeCar": "Car",
+    "stationTypeBike": "Motorbike",
     "addStationSubmitButton": "Submit",
     "addStationSuccessMessage": "\"{stationName}\" has been added and is pending review.",
     "@addStationSuccessMessage": {

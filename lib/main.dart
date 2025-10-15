@@ -21,6 +21,7 @@ import 'package:smart_charger_app/domain/services/anonymous_identity_service.dar
 import 'package:smart_charger_app/domain/services/feedback_service_impl.dart';
 import 'package:smart_charger_app/domain/services/i_feedback_service.dart';
 import 'package:smart_charger_app/l10n/app_localizations.dart';
+import 'package:smart_charger_app/presentation/bloc/carousel_index_cubit.dart';
 import 'package:smart_charger_app/presentation/bloc/sheet_drag_state.dart';
 import 'package:smart_charger_app/presentation/services/location_service.dart';
 
@@ -104,6 +105,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           ChangeNotifierProvider(create: (_) => SheetDragState()),
+          BlocProvider(create: (context) => CarouselIndexCubit()),
         ],
         child: MaterialApp(
           onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,

@@ -250,7 +250,7 @@ void _triggerStationsLoad() async {
               );
           return CameraPosition(
             target: LatLng(position.latitude, position.longitude),
-            zoom: 17.0,
+            zoom: 17,
           );
         } catch (e) {
           debugPrint("Lỗi khi lấy vị trí: $e");
@@ -342,7 +342,7 @@ void _triggerStationsLoad() async {
       );
 
       // 1. (Giữ nguyên) Yêu cầu di chuyển camera đến vị trí của tôi
-      context.read<MapControlBloc>().add(CameraMoveRequested(myLocation, 16.0));
+      context.read<MapControlBloc>().add(CameraMoveRequested(myLocation, 17));
 
       // 2. (THÊM MỚI) Yêu cầu NearbyStationsBloc cập nhật dữ liệu
       // Dùng event FetchNearbyStations, event này tính toán khoảng cách
@@ -480,29 +480,38 @@ void _triggerStationsLoad() async {
                       ),
                     ),
 
-                    BlocBuilder<StationSelectionBloc, StationSelectionState>(
-                      builder: (context, selectionState) {
-                        // Kết hợp với VisibilityCubit
-                        return BlocBuilder<VisibilityCubit, bool>(
-                          builder: (context, isVisible) {
-                            // Chỉ hiển thị khi cả hai điều kiện đều đúng
-                            if (selectionState is NoStationSelected &&
-                                isVisible) {
-                              return Positioned(
-                                bottom: 16.0,
-                                left: 0,
-                                right: 0,
-                                child: NearbyStationsCarouselLego(
-                                  currentUserPosition: _currentUserPosition,
-                                ),
-                              );
-                            }
-                            return const SizedBox.shrink();
-                          },
-                        );
-                      },
-                    ),
-
+                   BlocBuilder<StationSelectionBloc, StationSelectionState>(
+  builder: (context, selectionState) {
+    return BlocBuilder<VisibilityCubit, bool>(
+      builder: (context, isVisible) {
+        if (selectionState is NoStationSelected && isVisible) {
+          // --- ĐẢO NGƯỢC THỨ TỰ: POSITIONED BÊN NGOÀI ---
+          return Positioned(
+            bottom: 16.0,
+            left: 0,
+            right: 0,
+            // --- GESTUREDETECTOR BÊN TRONG ---
+            child: GestureDetector(
+              onVerticalDragEnd: (details) {
+                // Vuốt xuống để ẩn
+                if (details.primaryVelocity != null && details.primaryVelocity! > 0) {
+                  context.read<VisibilityCubit>().hide();
+                }
+              },
+              // Thêm hành vi này để GestureDetector "bắt" được cử chỉ vuốt
+              // ngay cả khi widget con của nó (carousel) cũng đang xử lý scroll
+              behavior: HitTestBehavior.translucent,
+              child: NearbyStationsCarouselLego(
+                currentUserPosition: _currentUserPosition,
+              ),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  },
+),
                     StationDetailsLego(
                       currentUserPosition: _currentUserPosition,
                     ),

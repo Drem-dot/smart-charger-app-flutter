@@ -1,14 +1,14 @@
 {
-  "appName": "Sạc Thông Minh",
+"appName": "Sạc Thông Minh",
 
 "navMap": "Bản đồ",
 "navStationList": "Danh sách",
 "navAddStation": "Thêm",
 "navSettings": "Cài đặt",
 
-"searchPlaceholder": "Tìm kiếm địa điểm...",
+"searchPlaceholder": "Tìm trạm sạc theo địa chỉ...",
 "directionsTooltip": "Tìm đường",
-"directionsTitle": "Tìm đường",
+"directionsTitle": "Tìm đường và trạm sạc trên đường",
 "directionsButton": "Dẫn đường",
 "cannotOpenMaps": "Không thể mở ứng dụng Google Maps.",
 
@@ -72,6 +72,9 @@
 "addStationOwnerPhoneLabel": "Số điện thoại chủ trạm *",
 "addStationOwnerPhoneValidator": "Vui lòng nhập số điện thoại",
 "addStationImages": "Hình ảnh trạm sạc (tùy chọn)",
+"addStationTypeTitle": "Loại trạm *",
+"stationTypeCar": "Ô tô",
+"stationTypeBike": "Xe máy",
 "addStationSubmitButton": "Gửi thông tin",
 "addStationSuccessMessage": "\"{stationName}\" đã được thêm và đang chờ duyệt.",
 "@addStationSuccessMessage": {

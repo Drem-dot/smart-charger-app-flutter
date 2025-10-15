@@ -9,6 +9,7 @@ import 'package:smart_charger_app/presentation/bloc/route_bloc.dart';
 import 'package:smart_charger_app/presentation/bloc/search_bloc.dart';
 import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/map/widgets/directions_lego.dart';
+import 'package:uuid/uuid.dart';
 
 enum SearchMode { search, directions }
 
@@ -40,12 +41,21 @@ class _SearchViewState extends State<_SearchView> {
   final _textController = TextEditingController();
   final _focusNode = FocusNode();
   GeocodingResult? _lastSearchResult;
+  String? _sessionToken;
 
   @override
   void initState() {
     super.initState();
-    // Listener chỉ để cập nhật nút X, không cần thiết cho logic chính
     _textController.addListener(() => setState(() {}));
+
+    // Thêm listener để quản lý session token
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus && _sessionToken == null) {
+        setState(() {
+          _sessionToken = const Uuid().v4();
+        });
+      }
+    });
   }
 
   @override
@@ -68,27 +78,59 @@ class _SearchViewState extends State<_SearchView> {
                 key: const ValueKey('search_ui'),
                 textController: _textController,
                 focusNode: _focusNode,
+                sessionToken: _sessionToken, // <-- TRUYỀN TOKEN XUỐNG
+                onSearch: (query) {
+                  // <-- XỬ LÝ SEARCH Ở ĐÂY
+                  if (_sessionToken == null) {
+                    setState(() {
+                      _sessionToken = const Uuid().v4();
+                    });
+                  }
+                  context.read<SearchBloc>().add(
+                    SearchQueryChanged(query, sessionToken: _sessionToken!),
+                  );
+                },
                 onResultSelected: (result) {
                   setState(() => _lastSearchResult = result);
                   _focusNode.unfocus();
-                  // Các BLoC này được đọc từ context của _SearchViewState, vốn nằm dưới MapPage, nên an toàn
-                  context.read<MapControlBloc>().add(CameraMoveRequested(result.latLng, 16.0));
-                  // 2. (THÊM MỚI) Yêu cầu NearbyStationsBloc cập nhật dữ liệu
-                  // Dùng event FetchStationsAroundPoint đã có sẵn
-                  context.read<NearbyStationsBloc>().add(FetchStationsAroundPoint(result.latLng));
-                  context.read<SearchBloc>().add(const SearchQueryChanged(''));
+                  context.read<MapControlBloc>().add(
+                    CameraMoveRequested(result.latLng, 17),
+                  );
+                  context.read<NearbyStationsBloc>().add(
+                    FetchStationsAroundPoint(result.latLng),
+                  );
+
+                  // --- SỬA LỖI 1 ---
+                  // Khi xóa kết quả, truyền token hiện tại (dù nó sắp bị hủy)
+                  // Hoặc tạo một token mới nếu cần
+                  final tokenToClear = _sessionToken ?? const Uuid().v4();
+                  context.read<SearchBloc>().add(
+                    SearchQueryChanged('', sessionToken: tokenToClear),
+                  );
+
+                  setState(() {
+                    _sessionToken = null;
+                  });
                 },
                 onSwitchToDirections: () {
                   if (_lastSearchResult != null) {
-                    context.read<RouteBloc>().add(DestinationUpdated(
-                      position: _lastSearchResult!.latLng,
-                      name: _lastSearchResult!.name,
-                    ));
+                    context.read<RouteBloc>().add(
+                      DestinationUpdated(
+                        position: _lastSearchResult!.latLng,
+                        name: _lastSearchResult!.name,
+                      ),
+                    );
                   }
                   setState(() => _mode = SearchMode.directions);
                   _focusNode.unfocus();
                   _textController.clear();
-                  context.read<SearchBloc>().add(const SearchQueryChanged(''));
+                  final tokenToClear = _sessionToken ?? const Uuid().v4();
+                  context.read<SearchBloc>().add(
+                    SearchQueryChanged('', sessionToken: tokenToClear),
+                  );
+                  setState(() {
+                    _sessionToken = null;
+                  });
                 },
               )
             : _buildDirectionsUI(),
@@ -106,7 +148,13 @@ class _SearchViewState extends State<_SearchView> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 16.0),
-              child: Text(AppLocalizations.of(context)!.directionsTitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              child: Text(
+                AppLocalizations.of(context)!.directionsTitle,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             IconButton(
               icon: const Icon(Icons.close),
@@ -130,6 +178,8 @@ class _SearchInputAndResults extends StatelessWidget {
   final FocusNode focusNode;
   final ValueChanged<GeocodingResult> onResultSelected;
   final VoidCallback onSwitchToDirections;
+  final String? sessionToken;
+  final ValueChanged<String> onSearch;
 
   const _SearchInputAndResults({
     super.key,
@@ -137,6 +187,8 @@ class _SearchInputAndResults extends StatelessWidget {
     required this.focusNode,
     required this.onResultSelected,
     required this.onSwitchToDirections,
+    required this.sessionToken,
+    required this.onSearch,
   });
 
   @override
@@ -161,13 +213,22 @@ class _SearchInputAndResults extends StatelessWidget {
                           icon: const Icon(Icons.clear),
                           onPressed: () {
                             textController.clear();
-                            context.read<SearchBloc>().add(const SearchQueryChanged(''));
+                            // --- SỬA LỖI 2 ---
+                            // Cần truyền sessionToken vào đây
+                            if (sessionToken != null) {
+                              context.read<SearchBloc>().add(
+                                SearchQueryChanged(
+                                  '',
+                                  sessionToken: sessionToken!,
+                                ),
+                              );
+                            }
                           },
                         )
                       : null,
                 ),
                 // `context` ở đây là của _SearchInputAndResults, nên nó an toàn
-                onChanged: (query) => context.read<SearchBloc>().add(SearchQueryChanged(query)),
+                onChanged: onSearch,
               ),
             ),
             IconButton(
@@ -182,7 +243,9 @@ class _SearchInputAndResults extends StatelessWidget {
             if (state is SearchLoading) return const LinearProgressIndicator();
             if (state is SearchSuccess && state.results.isNotEmpty) {
               return ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.3,
+                ),
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: state.results.length,

@@ -7,6 +7,7 @@ abstract class RouteState extends Equatable {
   final LatLng? destinationPosition;
   final String? destinationName;
   final RouteEntity? route;
+  LatLngBounds? get bounds => route?.bounds;
 
   const RouteState({
     this.originPosition,
@@ -39,6 +40,7 @@ class RouteLoading extends RouteState {
 }
 
 class RouteSuccess extends RouteState {
+  
   const RouteSuccess({
     required super.route,
     required super.originPosition,
@@ -58,5 +60,5 @@ class RouteFailure extends RouteState {
     required super.destinationName,
   });
   @override
-  List<Object?> get props => [error, originPosition, originName, destinationPosition, destinationName];
+  List<Object?> get props => [error, originPosition, originName, destinationPosition, destinationName, route];
 }

@@ -30,8 +30,30 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
     emit(SearchLoading());
     try {
-      final results = await _geocodingRepository.search(event.query);
+   
+
+      final suggestions = await _geocodingRepository.getAutocompleteSuggestions(
+        event.query, 
+        sessionToken: event.sessionToken
+      );
+
+      final List<GeocodingResult> results = [];
+      for (var suggestion in suggestions) {
+        final latLng = await _geocodingRepository.getLatLngFromPlaceId(
+          suggestion.placeId, 
+          sessionToken: event.sessionToken
+        );
+        if (latLng != null) {
+          results.add(GeocodingResult(
+            name: suggestion.description.split(',')[0],
+            address: suggestion.description,
+            latLng: latLng
+          ));
+        }
+      }
+
       emit(SearchSuccess(results));
+
     } catch (e) {
       emit(SearchFailure(e.toString()));
     }

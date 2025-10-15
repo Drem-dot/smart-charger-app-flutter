@@ -6,6 +6,7 @@ import 'package:smart_charger_app/presentation/bloc/station_selection_bloc.dart'
 import 'package:smart_charger_app/presentation/map/widgets/directions_button_lego.dart';
 import 'package:smart_charger_app/l10n/app_localizations.dart';
 import 'package:smart_charger_app/presentation/map/widgets/station_review_lego.dart';
+import 'package:smart_charger_app/presentation/utils/formatters.dart';
 
 class StationDetailsSheetContent extends StatelessWidget {
   final StationEntity station;
@@ -94,6 +95,29 @@ class _SheetCollapsedContent extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.ev_station,
+                          color: Theme.of(context).primaryColor,
+                          size: 30,
+                        ),
+                        const SizedBox(width: 8),
+                        if (station.distanceInKm != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 4.0),
+                            child: Text(
+                              formatDistance(station.distanceInKm!),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ),
+                      ],
+                    ),
+
                     Text(
                       station.name,
                       style: Theme.of(context).textTheme.headlineSmall
